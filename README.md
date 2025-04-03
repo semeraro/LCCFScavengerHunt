@@ -1,0 +1,2 @@
+# LCCFScavengerHunt
+scavenger hunt foo
