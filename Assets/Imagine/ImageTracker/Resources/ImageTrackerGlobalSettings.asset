@@ -25,10 +25,10 @@ MonoBehaviour:
     texture: {fileID: 2800000, guid: 39980db0759a547a5b9f3e413c7972e4, type: 3}
   - id: rmn
     texture: {fileID: 2800000, guid: e7fd3cb830773404693d049b4e6582a8, type: 3}
-  - id: TACC
-    texture: {fileID: 2800000, guid: 6c3339f4da7c0a0439d2c57ec2f848c8, type: 3}
   - id: TACCStar
     texture: {fileID: 2800000, guid: e68a7675629c467448b0522d0fa393e9, type: 3}
+  - id: tacc-social-preview
+    texture: {fileID: 2800000, guid: b4aade8a3d980174799c2cfee6dd597c, type: 3}
   settingsTemplates:
   - {fileID: 11400000, guid: 35c99cc7b662a46eb89cc7a32e239494, type: 2}
   - {fileID: 11400000, guid: 9cf415d375f91458483df57436950575, type: 2}
