@@ -921,11 +921,11 @@ PlayerSettings:
   captureStartupLogs: {}
   activeInputHandler: 2
   windowsGamepadBackendHint: 0
-  cloudProjectId: e72d6766-0cea-4320-8365-b1a85ec4618d
+  cloudProjectId: 56c41a20-d02c-4172-b569-cdbe4e5fc611
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
   projectName: My project
-  organizationId: taccdave
+  organizationId: ayon-s-das
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   hmiLoadingImage: {fileID: 0}
