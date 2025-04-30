@@ -23,10 +23,8 @@ namespace Imagine.WebAR
         [HideInInspector] public Quaternion targetRot;
     }
 
-
     public class ImageTracker : MonoBehaviour
     {
-
 #if !UNITY_EDITOR && UNITY_WEBGL
         [DllImport("__Internal")] private static extern void StartWebGLiTracker(string ids, string name);
         [DllImport("__Internal")] private static extern void StopWebGLiTracker();
@@ -179,7 +177,6 @@ namespace Imagine.WebAR
 
         void OnTrackingFound(string id)
         {
-
             if (!targets.ContainsKey(id))
                 return;
 
