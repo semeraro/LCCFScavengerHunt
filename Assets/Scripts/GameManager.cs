@@ -18,12 +18,17 @@ public class GameManager : MonoBehaviour
     public GameObject winScreen;
     public AudioSource dingSound;
     public AudioSource completionSound;
+
+
+    public SpeechBubbleSO image1SpeechSO; //Convert to an array list eventually.
+    private AudioSource audioSource;
+    
     
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-
+        audioSource = GetComponent<AudioSource>(); // gets the AudioSource on the same object
     }
 
     // Update is called once per frame
@@ -35,6 +40,13 @@ public class GameManager : MonoBehaviour
                 image1Tracked = true;
                 image1CheckMark.SetActive(true);
                 dingSound.Play();
+
+
+                UIManager.ShowSubtitles(image1SpeechSO);              
+                audioSource.clip = image1SpeechSO.audioClip;
+                audioSource.Play();
+
+
             }
        }
 
