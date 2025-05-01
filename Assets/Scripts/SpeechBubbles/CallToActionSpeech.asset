@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   subtitleText:
   - Our data models are on the loose!
-  - We need your help returning them
+  - We need your help to return them
   - to the right exhibits.
   subtitlePacing: 2
   audioClip: {fileID: 8300000, guid: 44caa6ba4b13d694981be37c73900231, type: 3}

@@ -55,6 +55,11 @@ public class UIManager : MonoBehaviour
             isInvDisplayed = true;
         }
     }
+
+    public void UpdateInventory()
+    {
+    
+    }
     
 
     public static void StartCountdown()
