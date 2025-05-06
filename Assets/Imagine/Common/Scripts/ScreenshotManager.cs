@@ -21,7 +21,7 @@ namespace Imagine.WebAR
 
 
         void Start(){
-            arCamera = GameObject.FindObjectOfType<ARCamera>();
+            arCamera = GameObject.FindFirstObjectByType<ARCamera>();
         }
 
 

@@ -9,13 +9,33 @@ public class SwipeLasso : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
     public Material ropeMaterial;
     public Material torusMaterial;
     public float maxSwipeDistance = 5000f;
-    public float maxLassoDistance = 10f;
+    public float maxLassoDistance = 8f;
     public float lassoSpeed = 25f;
     public float lassoArcHeight = 1.5f;
 
+    public GameObject orb;
+    public GameObject cube;
+    public Transform orbTransform;
+    public Transform cubeTransform;
+    public Transform emptyParent;
+    Collider orbCollider;
+    Collider cubeCollider;
+    public RuntimeAnimatorController anim1;
+    public RuntimeAnimatorController anim2;
+
+    public Vector3 torusPos;
+    public bool orbCaptured = false;
+    public bool cubeCaptured = false;
     private Vector2 swipeStart;
     private Vector2 swipeEnd;
     private bool swiping = false;
+
+
+    public void Start()
+    {
+        orbCollider = orbTransform.GetComponent<Collider>();
+        cubeCollider = cubeTransform.GetComponent<Collider>();
+    }
 
     public void OnPointerDown(PointerEventData eventData)
     {
@@ -113,6 +133,29 @@ public class SwipeLasso : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
             pos.y += Mathf.Sin(t * Mathf.PI) * lassoArcHeight;
 
             torus.transform.position = pos;
+
+            torusPos = new Vector3(torus.transform.position.x, torus.transform.position.y, torus.transform.position.z - 3.5f);
+            if (orbCollider.bounds.Contains(torusPos))
+            {
+                Debug.Log("Orb bounds contain the point : " + torusPos);
+                target = orbTransform.position;
+                torus.transform.position = target;
+                orbTransform.GetComponent<Animator>().runtimeAnimatorController = anim2 as RuntimeAnimatorController;
+                orbCaptured = true;
+                orbTransform.parent = emptyParent;
+                break;
+            }
+
+            else if (cubeCollider.bounds.Contains(torusPos))
+            {
+                Debug.Log("Cube bounds contain the point : " + torusPos);
+                target = cubeTransform.position;
+                torus.transform.position = target;
+                cubeTransform.GetComponent<Animator>().runtimeAnimatorController = anim2 as RuntimeAnimatorController;
+                cubeCaptured = true;
+                break;
+            }
+
             line.SetPosition(0, origin);
             line.SetPosition(1, pos);
 
@@ -137,6 +180,14 @@ public class SwipeLasso : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
             Vector3 pos = Vector3.Lerp(target, origin, t);
 
             torus.transform.position = pos;
+
+            if (orbCaptured) {
+                orbTransform.transform.position = pos;
+            }
+            if (cubeCaptured) {
+                cubeTransform.transform.position = pos;
+            }
+
             line.SetPosition(0, origin);
             line.SetPosition(1, pos);
 
@@ -151,10 +202,17 @@ public class SwipeLasso : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
         // Cleanup
         Destroy(ropeObj);
         Destroy(torus);
+
+        if (orbCaptured) {
+            orb.SetActive(false);
+        }
+        if (cubeCaptured) {
+            cube.SetActive(false);
+        }
     }
 
 
-    private GameObject CreateTorus(int segments = 30, int tubeSegments = 15, float radius = 0.5f, float tubeRadius = 0.1f)
+    private GameObject CreateTorus(int segments = 30, int tubeSegments = 15, float radius = 0.4f, float tubeRadius = 0.03f)
     {
         Mesh mesh = new Mesh();
         Vector3[] vertices = new Vector3[(segments + 1) * (tubeSegments + 1)];

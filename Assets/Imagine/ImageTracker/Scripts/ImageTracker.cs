@@ -79,7 +79,7 @@ namespace Imagine.WebAR
 
             if(trackerCam == null)
             {
-                trackerCam = GameObject.FindObjectOfType<ARCamera>();
+                trackerCam = GameObject.FindFirstObjectByType<ARCamera>();
             }
 
             foreach (var i in imageTargets)
