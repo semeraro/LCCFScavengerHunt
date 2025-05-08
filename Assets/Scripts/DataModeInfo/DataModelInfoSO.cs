@@ -10,7 +10,7 @@ using UnityEngine.UI;
 [CreateAssetMenu(fileName = "DataModelInfoSO", menuName = "Scriptable Objects/DataModelInfoSO")]
 public class DataModelInfoSO : ScriptableObject
 {
-    public Image image; // 2D image for the inventory display.
+    public Sprite image; // 2D image for the inventory display.
     public GameObject modelPrefab; // Access this prefab in case you want to reinstantiate it in the scene after you've captured it... @Hailey / Ayon
     
     public Boolean isTracked;
