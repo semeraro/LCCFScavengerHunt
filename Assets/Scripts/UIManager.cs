@@ -9,12 +9,23 @@ public class UIManager : MonoBehaviour
 {
     public static UIManager Instance { get; private set; }
 
+    
+
     public GameObject inventoryUI;
+    public GameObject inventoryButton;
     private Boolean isInvDisplayed;
     public TextMeshProUGUI subtitleText;
     public TextMeshProUGUI countdownText; 
+
+    public Boolean lassoToggled;
+    public GameObject lasso;
+    public GameObject lassoPanel;
+    
+
     void Awake()
     {
+        Debug.Log("UI Manager Awake");
+        
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject); // Avoid duplicate singletons
@@ -23,8 +34,25 @@ public class UIManager : MonoBehaviour
 
         Instance = this;
         DontDestroyOnLoad(gameObject); // Optional: persists across scenes
+
+        isInvDisplayed = false;
+
+        
     }
 
+    public static void SetTourModeUI()
+    {
+        Debug.Log("PlayMode Tour"); // for some reason this doesnt work
+            // Load or hide specific mode UI
+        Instance.inventoryUI.SetActive(false);
+        Instance.inventoryButton.SetActive(false);
+        Instance.lasso.SetActive(false);
+        Instance.lassoPanel.SetActive(false);
+    }
+    public static void SetGameModeUI()
+    {
+        Instance.lassoToggled = false;
+    }
     
     public static void ShowSubtitles(SpeechBubbleSO speechBubble)
     {
@@ -56,6 +84,7 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    
     public void UpdateInventory()
     {
     
@@ -65,6 +94,12 @@ public class UIManager : MonoBehaviour
     public static void StartCountdown()
     {
         
+    }
+    public void lassoToggle()
+    {
+        lassoToggled = !lassoToggled;
+        lassoPanel.SetActive(lassoToggled);
+        lasso.SetActive(lassoToggled);
     }
     
 }

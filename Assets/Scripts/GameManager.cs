@@ -8,14 +8,15 @@ using System.Runtime.InteropServices;
 
 public class GameManager : MonoBehaviour
 {
+    
+    public static GameManager Instance { get; private set; }
+
     public GameObject image1Prefab;
     public GameObject image2Prefab;
     public GameObject image1CheckMark;
     public GameObject image2CheckMark;
     public GameObject orbCheckMark;
     public GameObject cubeCheckMark;
-    public GameObject lasso;
-    public GameObject lassoPanel;
     bool image1Tracked = false;
     bool image2Tracked = false;
     public GameObject uiBox;
@@ -23,25 +24,76 @@ public class GameManager : MonoBehaviour
     public AudioSource dingSound;
     public AudioSource completionSound;
     public SwipeLasso swipe_lasso_script;
-    public bool lassoToggled;
 
 
     public SpeechBubbleSO image1SpeechSO; //Convert to an array list eventually.
     private AudioSource audioSource;
+
+    //Central control for instances such as UI Manager to reference for specific modes.
+    [SerializeField]
+    public enum PlayMode
+    {
+        Game,
+        Tour
+    }
+    [SerializeField]
+    public PlayMode playMode; // Shows up as a dropdown in the Inspector
     
     
-    
+    void Awake()
+    {
+        Debug.Log("Game Manager Awake");
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject); // Avoid duplicate singletons
+            return;
+        }
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject); // Optional: persists across scenes
+
+        
+        if (playMode == GameManager.PlayMode.Game)
+        {
+            // Load or hide specific mode UI
+            UIManager.SetGameModeUI();
+            
+        }
+
+        if (playMode == GameManager.PlayMode.Tour)
+        {
+            UIManager.SetTourModeUI();
+        }
+    }
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         audioSource = GetComponent<AudioSource>(); // gets the AudioSource on the same object
-        lassoToggled = false;
+        
+    }
+    public static PlayMode GetPlayMode()
+    {
+        return Instance.playMode;
     }
 
     // Update is called once per frame
     void Update()
+    {   
+        if(playMode == PlayMode.Game)
+        {
+            GameModeUpdate();
+        }
+        if(playMode == PlayMode.Tour)
+        {
+            TourModeUpdate();
+        }
+       
+    }
+    
+    void GameModeUpdate()
     {
-       if (!image1Tracked) {
+        if (!image1Tracked) {
             if(image1Prefab.activeInHierarchy == true)
             {
                 image1Tracked = true;
@@ -49,9 +101,9 @@ public class GameManager : MonoBehaviour
                 dingSound.Play();
 
 
-                // UIManager.ShowSubtitles(image1SpeechSO);              
-                // audioSource.clip = image1SpeechSO.audioClip;
-                // audioSource.Play();
+                UIManager.ShowSubtitles(image1SpeechSO);              
+                audioSource.clip = image1SpeechSO.audioClip;
+                audioSource.Play();
 
 
             }
@@ -92,10 +144,8 @@ public class GameManager : MonoBehaviour
             uiBox.SetActive(false);
         }
     }
-    public void lassoToggle()
+    void TourModeUpdate()
     {
-        lassoToggled = !lassoToggled;
-        lassoPanel.SetActive(lassoToggled);
-        lasso.SetActive(lassoToggled);
+
     }
 }
