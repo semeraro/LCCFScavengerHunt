@@ -142,6 +142,9 @@ public class SwipeLasso : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
                 torus.transform.position = target;
                 orbTransform.GetComponent<Animator>().runtimeAnimatorController = anim2 as RuntimeAnimatorController;
                 orbCaptured = true;
+
+                
+
                 orbTransform.parent = emptyParent;
                 break;
             }
@@ -203,11 +206,18 @@ public class SwipeLasso : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
         Destroy(ropeObj);
         Destroy(torus);
 
-        if (orbCaptured) {
+        if (orbCaptured) { 
+            
+            GameManager.modelDictionary[orb].isCaptured = true;
             orb.SetActive(false);
+
+           
         }
         if (cubeCaptured) {
+            
+            GameManager.modelDictionary[cube].isCaptured = true;
             cube.SetActive(false);
+
         }
     }
 
