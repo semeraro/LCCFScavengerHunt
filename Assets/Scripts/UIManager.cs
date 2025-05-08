@@ -54,9 +54,9 @@ public class UIManager : MonoBehaviour
         Instance.lassoToggled = false;
     }
     
-    public static void ShowSubtitles(SpeechBubbleSO speechBubble)
+    public static void ShowSubtitles(DataModelInfoSO modelInfo)
     {
-        Instance.StartCoroutine(Instance.DisplaySubtitles(speechBubble.subtitleText, speechBubble.subtitlePacing));
+        Instance.StartCoroutine(Instance.DisplaySubtitles(modelInfo.subtitleText, modelInfo.subtitlePacing));
     }
 
     private IEnumerator DisplaySubtitles(string[] lines, float intervalSeconds)

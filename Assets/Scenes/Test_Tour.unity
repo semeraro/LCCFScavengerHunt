@@ -539,13 +539,21 @@ PrefabInstance:
       propertyPath: inventoryButton
       value: 
       objectReference: {fileID: 860843127}
+    - target: {fileID: 3894791487679185352, guid: 83935cb4410887049a50f5d9eed0d382, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4036038254238739879, guid: 83935cb4410887049a50f5d9eed0d382, type: 3}
       propertyPath: m_Name
       value: UIManager
       objectReference: {fileID: 0}
+    - target: {fileID: 4292661822092120253, guid: 83935cb4410887049a50f5d9eed0d382, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6307431767527898932, guid: 83935cb4410887049a50f5d9eed0d382, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

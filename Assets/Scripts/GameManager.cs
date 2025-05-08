@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using System.Runtime.InteropServices;
+using Imagine.WebAR;
+using NUnit.Framework;
 
 
 
@@ -26,8 +28,8 @@ public class GameManager : MonoBehaviour
     public SwipeLasso swipe_lasso_script;
 
 
-    public SpeechBubbleSO image1SpeechSO; //Convert to an array list eventually.
     private AudioSource audioSource;
+
 
     //Central control for instances such as UI Manager to reference for specific modes.
     [SerializeField]
@@ -39,6 +41,10 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     public PlayMode playMode; // Shows up as a dropdown in the Inspector
     
+
+    public List<ModelEntry> modelEntries; // Shows in Inspector
+    public static Dictionary<GameObject, DataModelInfoSO> modelDictionary = new Dictionary<GameObject, DataModelInfoSO>();
+
     
     void Awake()
     {
@@ -53,22 +59,33 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(gameObject); // Optional: persists across scenes
 
         
-        if (playMode == GameManager.PlayMode.Game)
+        if (playMode == PlayMode.Game)
         {
             // Load or hide specific mode UI
-            UIManager.SetGameModeUI();
+            //UIManager.SetGameModeUI(); //Need to debug why this line doesnt work
             
         }
 
-        if (playMode == GameManager.PlayMode.Tour)
+        if (playMode == PlayMode.Tour)
         {
             UIManager.SetTourModeUI();
+        }
+
+        foreach (var entry in modelEntries)
+        {
+            Debug.Log("Hi");
+            if (entry.modelObject != null && !modelDictionary.ContainsKey(entry.modelObject))
+            {
+                modelDictionary.Add(entry.modelObject, entry.modelInfo);
+                Debug.Log("Key (GameObject): " + entry.modelObject.name + ", Value (DataModelInfoSO): " + entry.modelInfo.name);
+            }
         }
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        
         audioSource = GetComponent<AudioSource>(); // gets the AudioSource on the same object
         
     }
@@ -93,6 +110,32 @@ public class GameManager : MonoBehaviour
     
     void GameModeUpdate()
     {
+
+        // New Structure
+        foreach (var kvp in modelDictionary)
+        {
+            GameObject modelObject = kvp.Key;
+            DataModelInfoSO modelInfo = kvp.Value;
+            
+            if (!modelInfo.isTracked) {
+                if(modelObject.activeInHierarchy == true)
+                {
+                    modelInfo.isTracked = true;
+                    dingSound.Play();
+
+
+                    UIManager.ShowSubtitles(modelInfo);              
+                    audioSource.clip = modelInfo.audioClip;
+                    audioSource.Play();
+
+
+                }
+            }
+
+       }
+
+       //Old Structure
+
         if (!image1Tracked) {
             if(image1Prefab.activeInHierarchy == true)
             {
@@ -101,9 +144,9 @@ public class GameManager : MonoBehaviour
                 dingSound.Play();
 
 
-                UIManager.ShowSubtitles(image1SpeechSO);              
-                audioSource.clip = image1SpeechSO.audioClip;
-                audioSource.Play();
+                //UIManager.ShowSubtitles(image1SpeechSO);              
+                //audioSource.clip = image1SpeechSO.audioClip;
+                //audioSource.Play();
 
 
             }
@@ -129,6 +172,8 @@ public class GameManager : MonoBehaviour
         {
             orbCheckMark.SetActive(true);
             dingSound.Play();
+
+
         }
 
         if (swipe_lasso_script.cubeCaptured)
@@ -143,9 +188,20 @@ public class GameManager : MonoBehaviour
             winScreen.SetActive(true);
             uiBox.SetActive(false);
         }
+        
     }
     void TourModeUpdate()
     {
-
+        
     }
+}
+
+
+
+
+[System.Serializable]
+public class ModelEntry
+{
+    public GameObject modelObject;
+    public DataModelInfoSO modelInfo;
 }
