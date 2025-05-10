@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76d6d5ec92ab3b040a8111b49f3abd4d, type: 3}
+  m_Name: 'BloodCellModel]'
+  m_EditorClassIdentifier: 
+  image: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  modelPrefab: {fileID: 6413786011618051978, guid: 4cb7e463de377fa43920949d8346c6f5, type: 3}
+  isTracked: 1
+  isBeingLassoed: 0
+  isCaptured: 0
+  isReturned: 0
+  origin: Circular System
+  name: Red Blood Cell
+  subtitleText: []
+  subtitlePacing: 2
+  audioClip: {fileID: 8300000, guid: 44caa6ba4b13d694981be37c73900231, type: 3}

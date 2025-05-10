@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: OrbModel
   m_EditorClassIdentifier: 
   image: {fileID: 21300000, guid: f7603dbd54678c943bc8e2eed23201c9, type: 3}
-  modelPrefab: {fileID: 919132149155446097, guid: 0cc8f7da3dfd35943b61711683f482a0, type: 3}
-  isTracked: 0
-  isCaptured: 0
+  modelPrefab: {fileID: 8602513931660668226, guid: a5beac68852fefe4fabb0d1ee894f329, type: 3}
+  isTracked: 1
+  isBeingLassoed: 0
+  isCaptured: 1
   isReturned: 0
   origin: Earth Sciences
   name: Orb

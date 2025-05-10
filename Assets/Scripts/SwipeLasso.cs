@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Collections;
+using System.Collections.Generic;
 
 public class SwipeLasso : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDragHandler
 {
@@ -23,6 +24,9 @@ public class SwipeLasso : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
     public RuntimeAnimatorController anim1;
     public RuntimeAnimatorController anim2;
 
+    public List<ModelEntry> modelEntries; // Shows in Inspector
+    public static Dictionary<GameObject, DataModelInfoSO> modelDictionary = new Dictionary<GameObject, DataModelInfoSO>();
+    
     public Vector3 torusPos;
     public bool orbCaptured = false;
     public bool cubeCaptured = false;
@@ -37,9 +41,34 @@ public class SwipeLasso : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
         cubeCollider = cubeTransform.GetComponent<Collider>();
     }
 
+    // public void Update()
+    // {
+    //     foreach (var kvp in modelDictionary)
+    //     {
+    //         GameObject modelObject = kvp.Key;
+    //         DataModelInfoSO modelInfo = kvp.Value;
+            
+    //         if (!modelInfo.isTracked) {
+    //             if(modelObject.activeInHierarchy == true)
+    //             {
+    //                 modelInfo.isTracked = true;
+    //                 dingSound.Play();
+
+
+    //                 UIManager.ShowSubtitles(modelInfo);              
+    //                 audioSource.clip = modelInfo.audioClip;
+    //                 audioSource.Play();
+
+
+    //             }
+    //         }
+
+    //    }
+    // }
+
     public void OnPointerDown(PointerEventData eventData)
     {
-        Debug.Log("HI");
+        // Debug.Log("HI");
         if (RectTransformUtility.RectangleContainsScreenPoint(swipeArea, eventData.position))
         {
             swiping = true;
@@ -49,7 +78,7 @@ public class SwipeLasso : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
 
     public void OnDrag(PointerEventData eventData)
     {
-        Debug.Log("YO");
+        // Debug.Log("YO");
         if (swiping)
         {
             swipeEnd = eventData.position;
@@ -58,7 +87,7 @@ public class SwipeLasso : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        Debug.Log("BYE");
+        // Debug.Log("BYE");
         if (!swiping) return;
 
         swipeEnd = eventData.position;
@@ -134,30 +163,26 @@ public class SwipeLasso : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
 
             torus.transform.position = pos;
 
-            torusPos = new Vector3(torus.transform.position.x, torus.transform.position.y, torus.transform.position.z - 3.5f);
-            if (orbCollider.bounds.Contains(torusPos))
-            {
-                Debug.Log("Orb bounds contain the point : " + torusPos);
-                target = orbTransform.position;
-                torus.transform.position = target;
-                orbTransform.GetComponent<Animator>().runtimeAnimatorController = anim2 as RuntimeAnimatorController;
-                orbCaptured = true;
+            torusPos = new Vector3(torus.transform.position.x, torus.transform.position.y, torus.transform.position.z);
 
+            foreach (var kvp in GameManager.modelDictionary)
+            {
+                GameObject modelObject = kvp.Key;
+                DataModelInfoSO modelInfo = kvp.Value;
                 
-
-                orbTransform.parent = emptyParent;
-                break;
-            }
-
-            else if (cubeCollider.bounds.Contains(torusPos))
-            {
-                Debug.Log("Cube bounds contain the point : " + torusPos);
-                target = cubeTransform.position;
-                torus.transform.position = target;
-                cubeTransform.GetComponent<Animator>().runtimeAnimatorController = anim2 as RuntimeAnimatorController;
-                cubeCaptured = true;
-                break;
-            }
+                if(modelObject.activeInHierarchy == true)
+                {
+                    Collider modelCollider = modelObject.GetComponent<Collider>();
+                    if (modelCollider.bounds.Contains(torusPos))
+                    {
+                        Debug.Log(modelInfo.name + "bounds contain the point : " + torusPos);
+                        modelInfo.isBeingLassoed = true;
+                        target = modelObject.transform.position;
+                        torus.transform.position = target;
+                        modelObject.transform.parent = emptyParent;
+                    }
+                }
+             }
 
             line.SetPosition(0, origin);
             line.SetPosition(1, pos);
@@ -184,12 +209,23 @@ public class SwipeLasso : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
 
             torus.transform.position = pos;
 
-            if (orbCaptured) {
-                orbTransform.transform.position = pos;
+            foreach (var kvp in GameManager.modelDictionary)
+            {
+                GameObject modelObject = kvp.Key;
+                DataModelInfoSO modelInfo = kvp.Value;
+                
+                if(modelInfo.isBeingLassoed == true)
+                {
+                    modelObject.transform.position = pos;
+                }
             }
-            if (cubeCaptured) {
-                cubeTransform.transform.position = pos;
-            }
+
+            // if (orbCaptured) {
+            //     orbTransform.transform.position = pos;
+            // }
+            // if (cubeCaptured) {
+            //     cubeTransform.transform.position = pos;
+            // }
 
             line.SetPosition(0, origin);
             line.SetPosition(1, pos);
@@ -206,19 +242,31 @@ public class SwipeLasso : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
         Destroy(ropeObj);
         Destroy(torus);
 
-        if (orbCaptured) { 
+        foreach (var kvp in GameManager.modelDictionary)
+        {
+            GameObject modelObject = kvp.Key;
+            DataModelInfoSO modelInfo = kvp.Value;
+                
+            if(modelInfo.isBeingLassoed == true)
+            {
+                modelInfo.isBeingLassoed = false;
+                modelInfo.isCaptured = true;
+                modelObject.SetActive(false);
+            }
+        }
+        // if (orbCaptured) { 
             
-            GameManager.modelDictionary[orb].isCaptured = true;
-            orb.SetActive(false);
+        //     GameManager.modelDictionary[orb].isCaptured = true;
+        //     orb.SetActive(false);
 
            
-        }
-        if (cubeCaptured) {
+        // }
+        // if (cubeCaptured) {
             
-            GameManager.modelDictionary[cube].isCaptured = true;
-            cube.SetActive(false);
+        //     GameManager.modelDictionary[cube].isCaptured = true;
+        //     cube.SetActive(false);
 
-        }
+        // }
     }
 
 

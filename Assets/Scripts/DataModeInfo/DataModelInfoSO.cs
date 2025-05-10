@@ -14,6 +14,7 @@ public class DataModelInfoSO : ScriptableObject
     public GameObject modelPrefab; // Access this prefab in case you want to reinstantiate it in the scene after you've captured it... @Hailey / Ayon
     
     public Boolean isTracked;
+    public Boolean isBeingLassoed; // if it is currently being lassoed
     public Boolean isCaptured; // if it is false then it is released.
     public Boolean isReturned; // Relevant to the game mode ONLY. If it is returned by user to the correct station.
     public String origin; //The station it is originated from. This could later become an enum that stores specific station locations. i.e. Station 1, 2, 3. For modularity purposes and change the name of the STations in their own SO.
