@@ -20,6 +20,7 @@ public class UIManager : MonoBehaviour
     public Image modelImage;
     public TextMeshProUGUI modelName;
     public TextMeshProUGUI modelOrigin;
+    public int selectedInventoryItem = -1;
 
     public GameObject inventoryButton;
     private Boolean isInvDisplayed;
@@ -133,7 +134,7 @@ public class UIManager : MonoBehaviour
                         }
 
                         // Example: pass the index to a button click event
-                        Button button = item.GetComponent<Button>();
+                        Button button = item.transform.Find("Button").GetComponent<Button>();
                         if (button != null)
                         {
                             int capturedIndex = index; // Prevent closure capture issue
@@ -169,6 +170,19 @@ public class UIManager : MonoBehaviour
         lassoToggled = !lassoToggled;
         lassoPanel.SetActive(lassoToggled);
         lasso.SetActive(lassoToggled);
+    }
+
+    public void ChangeSelectedInventoryItem(int newValue)
+    {
+        //IF one is selected, make sure the others are deselected
+    }
+    public void DeselectInventoryItem()
+    {
+
+    }
+    public void SelectInventoryItem()
+    {
+
     }
     
 }
