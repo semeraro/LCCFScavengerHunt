@@ -9,24 +9,13 @@ public class SwipeLasso : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
     public RectTransform swipeArea;
     public Material ropeMaterial;
     public Material torusMaterial;
-    public float maxSwipeDistance = 5000f;
-    public float maxLassoDistance = 8f;
-    public float lassoSpeed = 25f;
+    public float maxSwipeDistance = 8000f;
+    public float maxLassoDistance = 6f;
+    public float lassoSpeed = 10f;
     public float lassoArcHeight = 1.5f;
 
-    public GameObject orb;
-    public GameObject cube;
-    public Transform orbTransform;
-    public Transform cubeTransform;
     public Transform emptyParent;
-    Collider orbCollider;
-    Collider cubeCollider;
     public RuntimeAnimatorController anim1;
-    public RuntimeAnimatorController anim2;
-
-    public List<ModelEntry> modelEntries; // Shows in Inspector
-    public static Dictionary<GameObject, DataModelInfoSO> modelDictionary = new Dictionary<GameObject, DataModelInfoSO>();
-    
     public Vector3 torusPos;
     public bool orbCaptured = false;
     public bool cubeCaptured = false;
@@ -35,36 +24,7 @@ public class SwipeLasso : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
     private bool swiping = false;
 
 
-    public void Start()
-    {
-        orbCollider = orbTransform.GetComponent<Collider>();
-        cubeCollider = cubeTransform.GetComponent<Collider>();
-    }
 
-    // public void Update()
-    // {
-    //     foreach (var kvp in modelDictionary)
-    //     {
-    //         GameObject modelObject = kvp.Key;
-    //         DataModelInfoSO modelInfo = kvp.Value;
-            
-    //         if (!modelInfo.isTracked) {
-    //             if(modelObject.activeInHierarchy == true)
-    //             {
-    //                 modelInfo.isTracked = true;
-    //                 dingSound.Play();
-
-
-    //                 UIManager.ShowSubtitles(modelInfo);              
-    //                 audioSource.clip = modelInfo.audioClip;
-    //                 audioSource.Play();
-
-
-    //             }
-    //         }
-
-    //    }
-    // }
 
     public void OnPointerDown(PointerEventData eventData)
     {
@@ -125,11 +85,28 @@ public class SwipeLasso : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
 
     private void FireLasso(Vector3 target)
     {
-        Vector3 origin = Camera.main.transform.position + new Vector3(0, -0.5f, 0.5f); // near bottom of view
-        StartCoroutine(AnimateLasso(origin, target));
+        Vector3 origin = Camera.main.transform.position + new Vector3(0, -0.5f, -0.5f); // near bottom of view
+
+        // Target positions for raycasts slightly above target final height
+        Vector3 targetAtMedHeight = new Vector3(target.x, target.y + .5f, target.z);
+        Vector3 targetAtMaxHeight = new Vector3(target.x, target.y + 1.25f, target.z);
+        float totalDistance = Vector3.Distance(origin, target);
+
+        RaycastHit hit;
+        // If raycast hits a collider, lasso goes to object location instead of initial target position
+        if (Physics.Raycast(origin, targetAtMaxHeight, out hit, totalDistance) || Physics.Raycast(origin, targetAtMedHeight, out hit, totalDistance))
+        {
+            print(hit.collider.gameObject.name);
+            StartCoroutine(AnimateLasso(origin, hit.collider.gameObject.transform.position, hit.collider.gameObject.name));
+        }
+        // Else goes to initial target position
+        else
+        {
+            StartCoroutine(AnimateLasso(origin, target, "none"));
+        }
     }
 
-    private IEnumerator AnimateLasso(Vector3 origin, Vector3 target)
+    private IEnumerator AnimateLasso(Vector3 origin, Vector3 target, string lassoedObjectName)
     {
         // Create rope
         GameObject ropeObj = new GameObject("LassoRope");
@@ -151,6 +128,7 @@ public class SwipeLasso : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
         float outgoingTravelTime = totalDistance / outgoingSpeed;
         float returnTravelTime = totalDistance / returnSpeed;
 
+        
         // 1. Outgoing (with arc)
         float timer = 0f;
         while (timer < outgoingTravelTime)
@@ -163,26 +141,21 @@ public class SwipeLasso : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
 
             torus.transform.position = pos;
 
-            torusPos = new Vector3(torus.transform.position.x, torus.transform.position.y, torus.transform.position.z);
+            torusPos = new Vector3(torus.transform.position.x, torus.transform.position.y - 0.2f, torus.transform.position.z + 0.2f);
 
-            foreach (var kvp in GameManager.modelDictionary)
-            {
-                GameObject modelObject = kvp.Key;
-                DataModelInfoSO modelInfo = kvp.Value;
-                
-                if(modelObject.activeInHierarchy == true)
+            // If object got lassoed, finds object in dictionary and sets "is being lassoed" to true
+            if (lassoedObjectName != "none") {
+                foreach (var kvp in GameManager.modelDictionary)
                 {
-                    Collider modelCollider = modelObject.GetComponent<Collider>();
-                    if (modelCollider.bounds.Contains(torusPos))
+                    GameObject modelObject = kvp.Key;
+                    DataModelInfoSO modelInfo = kvp.Value;
+                    
+                    if(modelInfo.name == lassoedObjectName)
                     {
-                        Debug.Log(modelInfo.name + "bounds contain the point : " + torusPos);
                         modelInfo.isBeingLassoed = true;
-                        target = modelObject.transform.position;
-                        torus.transform.position = target;
-                        modelObject.transform.parent = emptyParent;
                     }
                 }
-             }
+            }
 
             line.SetPosition(0, origin);
             line.SetPosition(1, pos);
@@ -209,6 +182,7 @@ public class SwipeLasso : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
 
             torus.transform.position = pos;
 
+            // Sets lassoed object position to follow torus position as it returns
             foreach (var kvp in GameManager.modelDictionary)
             {
                 GameObject modelObject = kvp.Key;
@@ -216,16 +190,9 @@ public class SwipeLasso : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
                 
                 if(modelInfo.isBeingLassoed == true)
                 {
-                    modelObject.transform.position = pos;
+                    modelObject.transform.position = torus.transform.position;
                 }
             }
-
-            // if (orbCaptured) {
-            //     orbTransform.transform.position = pos;
-            // }
-            // if (cubeCaptured) {
-            //     cubeTransform.transform.position = pos;
-            // }
 
             line.SetPosition(0, origin);
             line.SetPosition(1, pos);
@@ -242,6 +209,7 @@ public class SwipeLasso : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
         Destroy(ropeObj);
         Destroy(torus);
 
+        // Updates variables for lassoed objects and sets inactive in game scene
         foreach (var kvp in GameManager.modelDictionary)
         {
             GameObject modelObject = kvp.Key;
@@ -254,19 +222,6 @@ public class SwipeLasso : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
                 modelObject.SetActive(false);
             }
         }
-        // if (orbCaptured) { 
-            
-        //     GameManager.modelDictionary[orb].isCaptured = true;
-        //     orb.SetActive(false);
-
-           
-        // }
-        // if (cubeCaptured) {
-            
-        //     GameManager.modelDictionary[cube].isCaptured = true;
-        //     cube.SetActive(false);
-
-        // }
     }
 
 
