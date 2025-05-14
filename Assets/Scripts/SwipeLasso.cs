@@ -13,12 +13,14 @@ public class SwipeLasso : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
     public float maxLassoDistance = 6f;
     public float lassoSpeed = 10f;
     public float lassoArcHeight = 1.5f;
+    public bool lassoReturned = true;
+    
 
     public Transform emptyParent;
     public RuntimeAnimatorController anim1;
     public Vector3 torusPos;
-    public bool orbCaptured = false;
-    public bool cubeCaptured = false;
+    //public bool orbCaptured = false;
+    //public bool cubeCaptured = false;
     private Vector2 swipeStart;
     private Vector2 swipeEnd;
     private bool swiping = false;
@@ -64,7 +66,11 @@ public class SwipeLasso : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
         // Project into world space at a fixed distance from camera
         Vector3 targetPos = Camera.main.ScreenToWorldPoint(new Vector3(screenTarget.x, screenTarget.y, maxLassoDistance));
 
-        FireLasso(targetPos);
+        //Only fire the lasso if the previous firing has fully retracted to avoid duplicate lassos on the screen.
+        if(lassoReturned)
+        {
+            FireLasso(targetPos);
+        }
     }
 
     public void CustomPointerDown(BaseEventData data)
@@ -85,6 +91,7 @@ public class SwipeLasso : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
 
     private void FireLasso(Vector3 target)
     {
+        lassoReturned = false;
         Vector3 origin = Camera.main.transform.position + new Vector3(0, -0.5f, -0.5f); // near bottom of view
 
         // Target positions for raycasts slightly above target final height
@@ -208,6 +215,7 @@ public class SwipeLasso : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
         // Cleanup
         Destroy(ropeObj);
         Destroy(torus);
+        lassoReturned = true;
 
         // Updates variables for lassoed objects and sets inactive in game scene
         foreach (var kvp in GameManager.modelDictionary)

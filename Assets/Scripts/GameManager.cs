@@ -76,6 +76,10 @@ public class GameManager : MonoBehaviour
             Debug.Log("Hi");
             if (entry.modelObject != null && !modelDictionary.ContainsKey(entry.modelObject))
             {
+                entry.modelInfo.isBeingLassoed = false;
+                entry.modelInfo.isTracked = false;
+                entry.modelInfo.isReturned = false;
+                entry.modelInfo.isCaptured = false;
                 modelDictionary.Add(entry.modelObject, entry.modelInfo);
                 Debug.Log("Key (GameObject): " + entry.modelObject.name + ", Value (DataModelInfoSO): " + entry.modelInfo.name);
             }
@@ -135,7 +139,7 @@ public class GameManager : MonoBehaviour
        }
 
        //Old Structure
-
+        /*
         if (!image1Tracked) {
             if(image1Prefab.activeInHierarchy == true)
             {
@@ -188,6 +192,7 @@ public class GameManager : MonoBehaviour
             winScreen.SetActive(true);
             uiBox.SetActive(false);
         }
+        */
         
     }
     void TourModeUpdate()
