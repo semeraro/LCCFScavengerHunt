@@ -35,6 +35,8 @@ MonoBehaviour:
     texture: {fileID: 2800000, guid: e207770f95d1fc346a9e8ac1b5aa1527, type: 3}
   - id: mantle_image
     texture: {fileID: 2800000, guid: e35f0fa8aa495bd45b8fabbfb2ad0103, type: 3}
+  - id: bloodcell_image
+    texture: {fileID: 2800000, guid: 408df403e68129c4884448487e7335e5, type: 3}
   settingsTemplates:
   - {fileID: 11400000, guid: 35c99cc7b662a46eb89cc7a32e239494, type: 2}
   - {fileID: 11400000, guid: 9cf415d375f91458483df57436950575, type: 2}
