@@ -45,7 +45,10 @@ public class GameManager : MonoBehaviour
     public List<ModelEntry> modelEntries; // Shows in Inspector
     public static Dictionary<GameObject, DataModelInfoSO> modelDictionary = new Dictionary<GameObject, DataModelInfoSO>();
 
+    [SerializeField]
     public static List<DataModelInfoSO> capturedModels;
+
+    public static GameObject activeDataOrigin;
     void Awake()
     {
         Debug.Log("Game Manager Awake");

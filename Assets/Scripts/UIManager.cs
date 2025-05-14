@@ -20,17 +20,27 @@ public class UIManager : MonoBehaviour
     public Image modelImage;
     public TextMeshProUGUI modelName;
     public TextMeshProUGUI modelOrigin;
-    public int selectedInventoryItem = -1;
 
     public GameObject inventoryButton;
     private Boolean isInvDisplayed;
     public TextMeshProUGUI subtitleText;
-    public TextMeshProUGUI countdownText; 
+    public TextMeshProUGUI timerText; 
+    public int startMinutes = 15;
+    public int startSeconds = 0;
+    private float remainingTime;
+
 
     public Boolean lassoToggled;
     public GameObject lasso;
     public GameObject lassoPanel;
+
+    //Use this to reference list of models in Game Manager when Releasing Models
+    private int selectedInvIndex = -1;
     
+
+    public GameObject FlashWarningImage;
+    public Animator animator;
+    public Button ReleaseModelButton;
     
 
     void Awake()
@@ -48,6 +58,10 @@ public class UIManager : MonoBehaviour
 
         isInvDisplayed = false;
 
+
+        StopFlashWarning();
+        
+        ToggleReleaseModelButton(false);
         
     }
 
@@ -138,6 +152,7 @@ public class UIManager : MonoBehaviour
                         if (button != null)
                         {
                             int capturedIndex = index; // Prevent closure capture issue
+                            Debug.Log(capturedIndex);
                             button.onClick.AddListener(() => SetModelStats(capturedIndex));
                         }
 
@@ -145,25 +160,38 @@ public class UIManager : MonoBehaviour
                     }
                 }
         }
-        else
-        {
-
-        }
-        
-
-
         
     }
     public void SetModelStats(int index)
     {
+        selectedInvIndex = index;
+        Debug.Log(selectedInvIndex); // Why is this always 1?
         modelImage.sprite = GameManager.capturedModels[index].image;
         modelName.text = GameManager.capturedModels[index].name;
         modelOrigin.text = GameManager.capturedModels[index].origin;
+
     }
 
-    public static void StartCountdown()
+    public static void StartTimer() // Use after onboarding sequence
     {
+        Instance.remainingTime = Instance.startMinutes * 60 + Instance.startSeconds;
+        Instance.StartCoroutine(Instance.UpdateTimer());
         
+    }
+    private IEnumerator UpdateTimer()
+    {
+        while (remainingTime > 0)
+        {
+            int minutes = Mathf.FloorToInt(remainingTime / 60);
+            int seconds = Mathf.FloorToInt(remainingTime % 60);
+            timerText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
+
+            yield return new WaitForSeconds(1f);
+            remainingTime -= 1f;
+        }
+
+        // Time's up
+        timerText.text = "00:00";
     }
     public void lassoToggle()
     {
@@ -172,17 +200,28 @@ public class UIManager : MonoBehaviour
         lasso.SetActive(lassoToggled);
     }
 
-    public void ChangeSelectedInventoryItem(int newValue)
+    public static void FlashWarning ()
     {
-        //IF one is selected, make sure the others are deselected
+        Instance.FlashWarningImage.SetActive(true);
+        Instance.animator.Play("FlashWarning_Anim");
     }
-    public void DeselectInventoryItem()
+    public static void StopFlashWarning()
     {
-
+        Instance.FlashWarningImage.SetActive(false);
     }
-    public void SelectInventoryItem()
+    public static void ToggleReleaseModelButton(bool isEnabled)
     {
-
+        Instance.ReleaseModelButton.interactable = isEnabled;
+    }
+    public void CheckIfCorrectReleasedModel()
+    {
+        if(GameManager.capturedModels[selectedInvIndex] == GameManager.activeDataOrigin.GetComponent<MissingDataOrigin>().correctModel)
+        {
+            //Put animation here
+            Debug.Log("Released Correct Model!");
+        }
     }
     
+    
+
 }
