@@ -11,8 +11,8 @@ public class UIManager : MonoBehaviour
 {
     public static UIManager Instance { get; private set; }
 
-    
-    
+
+
 
     public GameObject inventoryUI;
     public GameObject inventoryGrid;
@@ -24,10 +24,11 @@ public class UIManager : MonoBehaviour
     public GameObject inventoryButton;
     private Boolean isInvDisplayed;
     public TextMeshProUGUI subtitleText;
-    public TextMeshProUGUI timerText; 
+    public TextMeshProUGUI timerText;
     public int startMinutes = 15;
     public int startSeconds = 0;
     private float remainingTime;
+    public Vector3 velocity = new Vector3(1, 1, 1);
 
 
     public Boolean lassoToggled;
@@ -36,17 +37,17 @@ public class UIManager : MonoBehaviour
 
     //Use this to reference list of models in Game Manager when Releasing Models
     private int selectedInvIndex = -1;
-    
+
 
     public GameObject FlashWarningImage;
     public Animator animator;
     public Button ReleaseModelButton;
-    
+
 
     void Awake()
     {
         Debug.Log("UI Manager Awake");
-        
+
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject); // Avoid duplicate singletons
@@ -60,16 +61,16 @@ public class UIManager : MonoBehaviour
 
 
         StopFlashWarning();
-        
+
         ToggleReleaseModelButton(false);
-        
+
     }
 
     //Set mode specific UI here!
     public static void SetTourModeUI()
     {
         Debug.Log("PlayMode Tour"); // for some reason this doesnt work
-            // Load or hide specific mode UI
+                                    // Load or hide specific mode UI
         Instance.inventoryUI.SetActive(false);
         Instance.inventoryButton.SetActive(false);
         Instance.lasso.SetActive(false);
@@ -79,7 +80,7 @@ public class UIManager : MonoBehaviour
     {
         Instance.lassoToggled = false;
     }
-    
+
     public static void ShowSubtitles(DataModelInfoSO modelInfo)
     {
         Instance.StartCoroutine(Instance.DisplaySubtitles(modelInfo.subtitleText, modelInfo.subtitlePacing));
@@ -112,7 +113,7 @@ public class UIManager : MonoBehaviour
     }
 
 
-    
+
     public void UpdateInventory()
     {
 
@@ -123,7 +124,7 @@ public class UIManager : MonoBehaviour
         }
 
         //Filter dictionary to create a list of captured model SOs.
-        GameManager.capturedModels =  GameManager.modelDictionary
+        GameManager.capturedModels = GameManager.modelDictionary
         .Where(kvp => kvp.Value.isCaptured)
         .Select(kvp => kvp.Value)
         .ToList();
@@ -133,34 +134,34 @@ public class UIManager : MonoBehaviour
             // Populate with captured models
             int index = 0;
 
-                foreach (var modelSO in GameManager.capturedModels)
+            foreach (var modelSO in GameManager.capturedModels)
+            {
+                DataModelInfoSO modelInfo = modelSO;
+
+                if (modelInfo.isCaptured)
                 {
-                    DataModelInfoSO modelInfo = modelSO;
+                    GameObject item = Instantiate(inventoryItemPrefab, inventoryGrid.transform);
 
-                    if (modelInfo.isCaptured)
+                    Transform icon = item.transform.Find("Image");
+                    if (icon != null)
                     {
-                        GameObject item = Instantiate(inventoryItemPrefab, inventoryGrid.transform);
-
-                        Transform icon = item.transform.Find("Image");
-                        if (icon != null)
-                        {
-                            icon.GetComponent<Image>().sprite = modelInfo.image;
-                        }
-
-                        // Example: pass the index to a button click event
-                        Button button = item.transform.Find("Button").GetComponent<Button>();
-                        if (button != null)
-                        {
-                            int capturedIndex = index; // Prevent closure capture issue
-                            Debug.Log(capturedIndex);
-                            button.onClick.AddListener(() => SetModelStats(capturedIndex));
-                        }
-
-                        index++;
+                        icon.GetComponent<Image>().sprite = modelInfo.image;
                     }
+
+                    // Example: pass the index to a button click event
+                    Button button = item.transform.Find("Button").GetComponent<Button>();
+                    if (button != null)
+                    {
+                        int capturedIndex = index; // Prevent closure capture issue
+                        Debug.Log(capturedIndex);
+                        button.onClick.AddListener(() => SetModelStats(capturedIndex));
+                    }
+
+                    index++;
                 }
+            }
         }
-        
+
     }
     public void SetModelStats(int index)
     {
@@ -176,7 +177,7 @@ public class UIManager : MonoBehaviour
     {
         Instance.remainingTime = Instance.startMinutes * 60 + Instance.startSeconds;
         Instance.StartCoroutine(Instance.UpdateTimer());
-        
+
     }
     private IEnumerator UpdateTimer()
     {
@@ -200,7 +201,7 @@ public class UIManager : MonoBehaviour
         lasso.SetActive(lassoToggled);
     }
 
-    public static void FlashWarning ()
+    public static void FlashWarning()
     {
         Instance.FlashWarningImage.SetActive(true);
         Instance.animator.Play("FlashWarning_Anim");
@@ -215,13 +216,50 @@ public class UIManager : MonoBehaviour
     }
     public void CheckIfCorrectReleasedModel()
     {
-        if(GameManager.capturedModels[selectedInvIndex] == GameManager.activeDataOrigin.GetComponent<MissingDataOrigin>().correctModel)
+        if (GameManager.capturedModels[selectedInvIndex] == GameManager.activeDataOrigin.GetComponent<MissingDataOrigin>().correctModel)
         {
-            //Put animation here
             Debug.Log("Released Correct Model!");
+            GameManager.capturedModels[selectedInvIndex].isReturning = true;
+            GameManager.capturedModels[selectedInvIndex].isCaptured = false;
+
+            foreach (var kvp in GameManager.modelDictionary)
+            {
+                GameObject modelObject = kvp.Key;
+                DataModelInfoSO modelInfo = kvp.Value;
+
+                if (modelInfo.name == GameManager.capturedModels[selectedInvIndex].name)
+                {
+                    modelObject.SetActive(true);
+                    inventoryUI.SetActive(false);
+                    isInvDisplayed = false;
+                }
+            }
+            UpdateInventory();
         }
     }
     
-    
+    void Update()
+    {
+        foreach (var kvp in GameManager.modelDictionary)
+        {
+            GameObject modelObject = kvp.Key;
+            DataModelInfoSO modelInfo = kvp.Value;
 
+            if (modelInfo.isReturning)
+            {
+                float distanceToImage = Vector3.Distance(modelObject.transform.position, GameManager.activeDataOrigin.GetComponent<MissingDataOrigin>().transform.position);
+                if (distanceToImage > 0.01)
+                {
+                    modelObject.transform.position = Vector3.SmoothDamp(modelObject.transform.position, GameManager.activeDataOrigin.GetComponent<MissingDataOrigin>().transform.position, ref velocity, 0.3f);
+                }
+                else
+                {
+                    modelObject.transform.parent = GameManager.activeDataOrigin.GetComponent<MissingDataOrigin>().transform.parent;
+                    GameManager.activeDataOrigin.GetComponent<MissingDataOrigin>().enabled = false;
+                    modelInfo.isReturning = false;
+                    modelInfo.isReturned = true;
+                }
+            }
+        }
+    }
 }

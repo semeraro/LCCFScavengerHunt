@@ -16,7 +16,8 @@ MonoBehaviour:
   modelPrefab: {fileID: 4785483597699980791, guid: 155411dda50c65f4c9ae94ba3fba3f9a, type: 3}
   isTracked: 1
   isBeingLassoed: 0
-  isCaptured: 1
+  isCaptured: 0
+  isReturning: 1
   isReturned: 0
   origin: Skeletal System
   name: Skull

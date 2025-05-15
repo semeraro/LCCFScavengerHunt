@@ -19,8 +19,7 @@ public class SwipeLasso : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
     public Transform emptyParent;
     public RuntimeAnimatorController anim1;
     public Vector3 torusPos;
-    //public bool orbCaptured = false;
-    //public bool cubeCaptured = false;
+
     private Vector2 swipeStart;
     private Vector2 swipeEnd;
     private bool swiping = false;

@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 1761847010465817810}
   - component: {fileID: 7939872252431177562}
   - component: {fileID: 2063867885273102929}
+  - component: {fileID: 1530042284096181987}
   m_Layer: 0
   m_Name: Missing Data Origin
   m_TagString: Untagged
@@ -131,3 +132,16 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &1530042284096181987
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2727717357004472759}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e46eede0ac4909040a5c9a326885e1be, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  correctModel: {fileID: 0}

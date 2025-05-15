@@ -81,6 +81,7 @@ public class GameManager : MonoBehaviour
             {
                 entry.modelInfo.isBeingLassoed = false;
                 entry.modelInfo.isTracked = false;
+                entry.modelInfo.isReturning = false;
                 entry.modelInfo.isReturned = false;
                 entry.modelInfo.isCaptured = false;
                 modelDictionary.Add(entry.modelObject, entry.modelInfo);
