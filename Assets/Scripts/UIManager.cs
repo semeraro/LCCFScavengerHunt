@@ -22,6 +22,7 @@ public class UIManager : MonoBehaviour
     public TextMeshProUGUI modelOrigin;
 
     public GameObject inventoryButton;
+    public GameObject lassoButton;
     private Boolean isInvDisplayed;
     public TextMeshProUGUI subtitleText;
     public TextMeshProUGUI timerText;
@@ -38,10 +39,15 @@ public class UIManager : MonoBehaviour
     //Use this to reference list of models in Game Manager when Releasing Models
     private int selectedInvIndex = -1;
 
-
     public GameObject FlashWarningImage;
     public Animator animator;
     public Button ReleaseModelButton;
+    public AudioSource dingSound;
+    public AudioSource completionSound;
+    public AudioSource whooshSound;
+    public GameObject successScreen;
+    public int modelsReturned = 0;
+    public bool gameOver = false;
 
 
     void Awake()
@@ -163,6 +169,13 @@ public class UIManager : MonoBehaviour
         }
 
     }
+
+    public void disableLassoUI()
+    {
+        lassoButton.SetActive(false);
+        lasso.SetActive(false);
+        lassoPanel.SetActive(false);
+    }
     public void SetModelStats(int index)
     {
         selectedInvIndex = index;
@@ -219,6 +232,7 @@ public class UIManager : MonoBehaviour
         if (GameManager.capturedModels[selectedInvIndex] == GameManager.activeDataOrigin.GetComponent<MissingDataOrigin>().correctModel)
         {
             Debug.Log("Released Correct Model!");
+            whooshSound.Play();
             GameManager.capturedModels[selectedInvIndex].isReturning = true;
             GameManager.capturedModels[selectedInvIndex].isCaptured = false;
 
@@ -237,7 +251,7 @@ public class UIManager : MonoBehaviour
             UpdateInventory();
         }
     }
-    
+
     void Update()
     {
         foreach (var kvp in GameManager.modelDictionary)
@@ -248,7 +262,7 @@ public class UIManager : MonoBehaviour
             if (modelInfo.isReturning)
             {
                 float distanceToImage = Vector3.Distance(modelObject.transform.position, GameManager.activeDataOrigin.GetComponent<MissingDataOrigin>().transform.position);
-                if (distanceToImage > 0.01)
+                if (distanceToImage > 0.05)
                 {
                     modelObject.transform.position = Vector3.SmoothDamp(modelObject.transform.position, GameManager.activeDataOrigin.GetComponent<MissingDataOrigin>().transform.position, ref velocity, 0.3f);
                 }
@@ -258,8 +272,21 @@ public class UIManager : MonoBehaviour
                     GameManager.activeDataOrigin.GetComponent<MissingDataOrigin>().enabled = false;
                     modelInfo.isReturning = false;
                     modelInfo.isReturned = true;
+                    dingSound.Play();
+                    modelsReturned += 1;
                 }
             }
         }
+
+        if (modelsReturned == 3 && !gameOver)
+        {
+            completionSound.Play();
+            successScreen.SetActive(true);
+            inventoryButton.SetActive(false);
+            inventoryUI.SetActive(false);
+            gameOver = true;
+        }
     }
+    
+
 }

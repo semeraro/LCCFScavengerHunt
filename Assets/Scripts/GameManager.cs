@@ -21,11 +21,15 @@ public class GameManager : MonoBehaviour
     public GameObject cubeCheckMark;
     bool image1Tracked = false;
     bool image2Tracked = false;
+    public bool allModelsCaptured = false;
     public GameObject uiBox;
     public GameObject winScreen;
     public AudioSource dingSound;
     public AudioSource completionSound;
+    public AudioSource capturedAudio;
     public SwipeLasso swipe_lasso_script;
+    public UIManager uiManager;
+
 
 
     private AudioSource audioSource;
@@ -115,7 +119,7 @@ public class GameManager : MonoBehaviour
         }
        
     }
-    
+
     void GameModeUpdate()
     {
 
@@ -124,15 +128,16 @@ public class GameManager : MonoBehaviour
         {
             GameObject modelObject = kvp.Key;
             DataModelInfoSO modelInfo = kvp.Value;
-            
-            if (!modelInfo.isTracked) {
-                if(modelObject.activeInHierarchy == true)
+
+            if (!modelInfo.isTracked)
+            {
+                if (modelObject.activeInHierarchy == true)
                 {
                     modelInfo.isTracked = true;
                     dingSound.Play();
 
 
-                    UIManager.ShowSubtitles(modelInfo);              
+                    UIManager.ShowSubtitles(modelInfo);
                     audioSource.clip = modelInfo.audioClip;
                     audioSource.Play();
 
@@ -140,7 +145,15 @@ public class GameManager : MonoBehaviour
                 }
             }
 
-       }
+        }
+
+        if (capturedModels.Count == 3 && !allModelsCaptured)
+        {
+            allModelsCaptured = true;
+            capturedAudio.Play();
+            uiManager.disableLassoUI();
+                
+        }
 
        //Old Structure
         /*
@@ -197,7 +210,7 @@ public class GameManager : MonoBehaviour
             uiBox.SetActive(false);
         }
         */
-        
+
     }
     void TourModeUpdate()
     {

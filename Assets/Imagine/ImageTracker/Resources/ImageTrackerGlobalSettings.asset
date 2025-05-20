@@ -13,30 +13,16 @@ MonoBehaviour:
   m_Name: ImageTrackerGlobalSettings
   m_EditorClassIdentifier: 
   imageTargetInfos:
-  - id: bear
-    texture: {fileID: 2800000, guid: 174b033aeb9c8482aa43686a5271d72b, type: 3}
-  - id: bfly
-    texture: {fileID: 2800000, guid: 51cd527e8ff5d4040a756da7cafdc9a7, type: 3}
-  - id: flower
-    texture: {fileID: 2800000, guid: 22e6e002c40714983b84e5721851d377, type: 3}
-  - id: lady
-    texture: {fileID: 2800000, guid: ce0f31aa880f94ad6a695850f5c8762c, type: 3}
-  - id: reel
-    texture: {fileID: 2800000, guid: 39980db0759a547a5b9f3e413c7972e4, type: 3}
-  - id: rmn
-    texture: {fileID: 2800000, guid: e7fd3cb830773404693d049b4e6582a8, type: 3}
   - id: TACCStar
     texture: {fileID: 2800000, guid: e68a7675629c467448b0522d0fa393e9, type: 3}
   - id: tacc-social-preview
     texture: {fileID: 2800000, guid: b4aade8a3d980174799c2cfee6dd597c, type: 3}
   - id: skull_image
-    texture: {fileID: 2800000, guid: aa9d402d419b3df43a781e9ed7824634, type: 3}
-  - id: bloodcell_image
-    texture: {fileID: 2800000, guid: e207770f95d1fc346a9e8ac1b5aa1527, type: 3}
-  - id: mantle_image
-    texture: {fileID: 2800000, guid: e35f0fa8aa495bd45b8fabbfb2ad0103, type: 3}
+    texture: {fileID: 2800000, guid: b8f17dc4e47b40c40a7b3d0fc65913b5, type: 3}
   - id: bloodcell_image
     texture: {fileID: 2800000, guid: 408df403e68129c4884448487e7335e5, type: 3}
+  - id: mantle_image
+    texture: {fileID: 2800000, guid: 4ce631b0bbd84804cb3b5aa7dc7c8ed9, type: 3}
   settingsTemplates:
   - {fileID: 11400000, guid: 35c99cc7b662a46eb89cc7a32e239494, type: 2}
   - {fileID: 11400000, guid: 9cf415d375f91458483df57436950575, type: 2}

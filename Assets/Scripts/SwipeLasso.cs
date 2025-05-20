@@ -134,7 +134,7 @@ public class SwipeLasso : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
         float outgoingTravelTime = totalDistance / outgoingSpeed;
         float returnTravelTime = totalDistance / returnSpeed;
 
-        
+
         // 1. Outgoing (with arc)
         float timer = 0f;
         while (timer < outgoingTravelTime)
@@ -150,13 +150,14 @@ public class SwipeLasso : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
             torusPos = new Vector3(torus.transform.position.x, torus.transform.position.y - 0.2f, torus.transform.position.z + 0.2f);
 
             // If object got lassoed, finds object in dictionary and sets "is being lassoed" to true
-            if (lassoedObjectName != "none") {
+            if (lassoedObjectName != "none")
+            {
                 foreach (var kvp in GameManager.modelDictionary)
                 {
                     GameObject modelObject = kvp.Key;
                     DataModelInfoSO modelInfo = kvp.Value;
-                    
-                    if(modelInfo.name == lassoedObjectName)
+
+                    if (modelInfo.name == lassoedObjectName)
                     {
                         modelInfo.isBeingLassoed = true;
                     }
@@ -193,8 +194,8 @@ public class SwipeLasso : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
             {
                 GameObject modelObject = kvp.Key;
                 DataModelInfoSO modelInfo = kvp.Value;
-                
-                if(modelInfo.isBeingLassoed == true)
+
+                if (modelInfo.isBeingLassoed == true)
                 {
                     modelObject.transform.position = torus.transform.position;
                 }
@@ -221,8 +222,8 @@ public class SwipeLasso : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
         {
             GameObject modelObject = kvp.Key;
             DataModelInfoSO modelInfo = kvp.Value;
-                
-            if(modelInfo.isBeingLassoed == true)
+
+            if (modelInfo.isBeingLassoed == true)
             {
                 modelInfo.isBeingLassoed = false;
                 modelInfo.isCaptured = true;

@@ -16,7 +16,8 @@ MonoBehaviour:
   modelPrefab: {fileID: 8602513931660668226, guid: a5beac68852fefe4fabb0d1ee894f329, type: 3}
   isTracked: 1
   isBeingLassoed: 0
-  isCaptured: 1
+  isCaptured: 0
+  isReturning: 0
   isReturned: 0
   origin: Earth Sciences
   name: Lava

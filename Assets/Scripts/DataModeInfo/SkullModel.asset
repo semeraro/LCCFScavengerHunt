@@ -17,7 +17,7 @@ MonoBehaviour:
   isTracked: 1
   isBeingLassoed: 0
   isCaptured: 0
-  isReturning: 1
+  isReturning: 0
   isReturned: 0
   origin: Skeletal System
   name: Skull
