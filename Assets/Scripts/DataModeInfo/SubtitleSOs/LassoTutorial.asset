@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 79e7ab7129b01c642a4cf793d280e6e6, type: 3}
+  m_Name: LassoTutorial
+  m_EditorClassIdentifier: 
+  subtitleText:
+  - Great!
+  - Now, swipe up from the panel at the
+  - bottom of the screen to throw it!
+  subtitlePacing: 1.3
+  audioClip: {fileID: 8300000, guid: 1f0b8920e7d3d3b439d16354f89d5fb6, type: 3}

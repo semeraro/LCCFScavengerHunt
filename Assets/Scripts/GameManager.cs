@@ -32,7 +32,7 @@ public class GameManager : MonoBehaviour
 
 
 
-    private AudioSource audioSource;
+    public AudioSource audioSource;
 
 
     //Central control for instances such as UI Manager to reference for specific modes.
@@ -48,9 +48,10 @@ public class GameManager : MonoBehaviour
 
     public List<ModelEntry> modelEntries; // Shows in Inspector
     public static Dictionary<GameObject, DataModelInfoSO> modelDictionary = new Dictionary<GameObject, DataModelInfoSO>();
+    public List<SubtitleSO> subtitlesDictionary = new List<SubtitleSO>();
 
     [SerializeField]
-    public static List<DataModelInfoSO> capturedModels;
+    public static List<DataModelInfoSO> capturedModels = new List<DataModelInfoSO>();
 
     public static GameObject activeDataOrigin;
     void Awake()
@@ -97,9 +98,9 @@ public class GameManager : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+
         audioSource = GetComponent<AudioSource>(); // gets the AudioSource on the same object
-        
+        UIManager.ShowIntroSubtitles();
     }
     public static PlayMode GetPlayMode()
     {
@@ -134,19 +135,18 @@ public class GameManager : MonoBehaviour
                 if (modelObject.activeInHierarchy == true)
                 {
                     modelInfo.isTracked = true;
-                    dingSound.Play();
+                    //dingSound.Play();
 
 
-                    UIManager.ShowSubtitles(modelInfo);
-                    audioSource.clip = modelInfo.audioClip;
-                    audioSource.Play();
+                    // UIManager.ShowDataSubtitles(modelInfo);
+                    // audioSource.clip = modelInfo.audioClip;
+                    // audioSource.Play();
 
 
                 }
             }
 
         }
-
         if (capturedModels.Count == 3 && !allModelsCaptured)
         {
             allModelsCaptured = true;
@@ -154,63 +154,6 @@ public class GameManager : MonoBehaviour
             uiManager.disableLassoUI();
                 
         }
-
-       //Old Structure
-        /*
-        if (!image1Tracked) {
-            if(image1Prefab.activeInHierarchy == true)
-            {
-                image1Tracked = true;
-                image1CheckMark.SetActive(true);
-                dingSound.Play();
-
-
-                //UIManager.ShowSubtitles(image1SpeechSO);              
-                //audioSource.clip = image1SpeechSO.audioClip;
-                //audioSource.Play();
-
-
-            }
-       }
-
-       if (!image2Tracked) {
-            if(image2Prefab.activeInHierarchy == true)
-            {
-                image2Tracked = true;
-                image2CheckMark.SetActive(true);
-                dingSound.Play();
-            }
-       }
-
-        else if (image1Tracked && image2Tracked) {
-            //winScreen.SetActive(true);
-            //uiBox.SetActive(false);
-            completionSound.Play();
-
-        }
-
-        if (swipe_lasso_script.orbCaptured)
-        {
-            orbCheckMark.SetActive(true);
-            dingSound.Play();
-
-
-        }
-
-        if (swipe_lasso_script.cubeCaptured)
-        {
-            cubeCheckMark.SetActive(true);
-            dingSound.Play();
-        }
-
-        if (swipe_lasso_script.orbCaptured && swipe_lasso_script.cubeCaptured)
-        {
-            completionSound.Play();
-            winScreen.SetActive(true);
-            uiBox.SetActive(false);
-        }
-        */
-
     }
     void TourModeUpdate()
     {

@@ -41,6 +41,8 @@ public class UIManager : MonoBehaviour
 
     public GameObject FlashWarningImage;
     public Animator animator;
+    public Animator lassoIn;
+    public Animator lassoPulse;
     public Button ReleaseModelButton;
     public AudioSource dingSound;
     public AudioSource completionSound;
@@ -67,7 +69,8 @@ public class UIManager : MonoBehaviour
 
 
         StopFlashWarning();
-
+        lassoButton.SetActive(false);
+        lassoButton.GetComponent<Animator>().enabled = false;
         ToggleReleaseModelButton(false);
 
     }
@@ -87,13 +90,47 @@ public class UIManager : MonoBehaviour
         Instance.lassoToggled = false;
     }
 
-    public static void ShowSubtitles(DataModelInfoSO modelInfo)
+    public static void ShowIntroSubtitles()
     {
-        Instance.StartCoroutine(Instance.DisplaySubtitles(modelInfo.subtitleText, modelInfo.subtitlePacing));
+        SubtitleSO introSubtitles = GameManager.Instance.subtitlesDictionary[0];
+        GameManager.Instance.audioSource.clip = introSubtitles.audioClip;
+        GameManager.Instance.audioSource.Play();
+        Instance.StartCoroutine(Instance.DisplaySubtitles(introSubtitles.subtitleText, introSubtitles.subtitlePacing));
+    }
+    public static void ShowLassoGrabSubtitles()
+    {
+        SubtitleSO lassoGrabSubtitles = GameManager.Instance.subtitlesDictionary[1];
+        Instance.StartCoroutine(Instance.DisplaySubtitles(lassoGrabSubtitles.subtitleText, lassoGrabSubtitles.subtitlePacing));
+        GameManager.Instance.audioSource.clip = lassoGrabSubtitles.audioClip;
+        GameManager.Instance.audioSource.Play();
     }
 
+    public static void ShowLassoTutorialSubtitles()
+    {
+        SubtitleSO lassoTutorialSubtitles = GameManager.Instance.subtitlesDictionary[2];
+        Instance.StartCoroutine(Instance.DisplaySubtitles(lassoTutorialSubtitles.subtitleText, lassoTutorialSubtitles.subtitlePacing));
+        GameManager.Instance.audioSource.clip = lassoTutorialSubtitles.audioClip;
+        GameManager.Instance.audioSource.Play();
+    }
+
+    public static void ShowLassoAllModelsSubtitles()
+    {
+        SubtitleSO lassoAllModelsSubtitles = GameManager.Instance.subtitlesDictionary[3];
+        Instance.StartCoroutine(Instance.DisplaySubtitles(lassoAllModelsSubtitles.subtitleText, lassoAllModelsSubtitles.subtitlePacing));
+        GameManager.Instance.audioSource.clip = lassoAllModelsSubtitles.audioClip;
+        GameManager.Instance.audioSource.Play();
+    }
+
+    public static void ShowDataSubtitles(DataModelInfoSO modelInfo)
+    {
+        Instance.StartCoroutine(Instance.DisplaySubtitles(modelInfo.subtitleText, modelInfo.subtitlePacing));
+
+    }
+
+    // Display subtitles in specified intervals
     private IEnumerator DisplaySubtitles(string[] lines, float intervalSeconds)
     {
+        subtitleText.transform.parent.gameObject.SetActive(true);
         foreach (string line in lines)
         {
             subtitleText.text = line;
@@ -101,8 +138,22 @@ public class UIManager : MonoBehaviour
         }
 
         // Optional: clear text after subtitles finish
-        subtitleText.text = "---";
+        subtitleText.text = " ";
+        subtitleText.transform.parent.gameObject.SetActive(false);
+        if (lassoButton.active == false)
+        {
+            ShowLassoButton();
+        }
     }
+    public void ShowLassoButton()
+    {
+        lassoButton.SetActive(true);
+        lassoButton.transform.GetChild(0).gameObject.SetActive(true);
+        lassoButton.GetComponent<Animator>().enabled = true;
+        ShowLassoGrabSubtitles();
+
+    }
+
     public void DisplayInventory() // True to set active 
     {
         if (isInvDisplayed)
@@ -210,8 +261,35 @@ public class UIManager : MonoBehaviour
     public void lassoToggle()
     {
         lassoToggled = !lassoToggled;
-        lassoPanel.SetActive(lassoToggled);
-        lasso.SetActive(lassoToggled);
+        if (lassoToggled)
+        {
+            lassoPanel.SetActive(true);
+            lasso.SetActive(true);
+        }
+        else
+        {
+            if (SwipeLasso.lassoReturned)
+            {
+                lassoPanel.SetActive(false);
+                lasso.SetActive(false);
+            }
+            else
+            {
+                lassoPanel.SetActive(false);
+            }
+        }
+    }
+    
+
+    public void lassoAnimationSmall()
+    {
+        if (!lassoButton.GetComponent<Animator>().GetBool("button_small"))
+        {
+            lassoButton.GetComponent<Animator>().SetBool("button_small", true);
+            lassoButton.transform.GetChild(0).gameObject.SetActive(false);
+
+            ShowLassoTutorialSubtitles();
+        }
     }
 
     public static void FlashWarning()

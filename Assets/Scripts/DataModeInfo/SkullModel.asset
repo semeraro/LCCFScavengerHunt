@@ -23,4 +23,4 @@ MonoBehaviour:
   name: Skull
   subtitleText: []
   subtitlePacing: 0
-  audioClip: {fileID: 8300000, guid: 44caa6ba4b13d694981be37c73900231, type: 3}
+  audioClip: {fileID: 0}

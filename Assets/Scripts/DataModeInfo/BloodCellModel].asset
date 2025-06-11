@@ -16,10 +16,11 @@ MonoBehaviour:
   modelPrefab: {fileID: 6413786011618051978, guid: 4cb7e463de377fa43920949d8346c6f5, type: 3}
   isTracked: 1
   isBeingLassoed: 0
-  isCaptured: 1
+  isCaptured: 0
+  isReturning: 0
   isReturned: 0
   origin: Circular System
   name: Red Blood Cell
   subtitleText: []
-  subtitlePacing: 2
-  audioClip: {fileID: 8300000, guid: 44caa6ba4b13d694981be37c73900231, type: 3}
+  subtitlePacing: 1.3
+  audioClip: {fileID: 0}

@@ -13,7 +13,8 @@ public class SwipeLasso : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
     public float maxLassoDistance = 6f;
     public float lassoSpeed = 10f;
     public float lassoArcHeight = 1.5f;
-    public bool lassoReturned = true;
+    public static bool lassoReturned = true;
+    public bool firstLassoThrown = false;
     
 
     public Transform emptyParent;
@@ -90,6 +91,12 @@ public class SwipeLasso : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
 
     private void FireLasso(Vector3 target)
     {
+        if (firstLassoThrown == false)
+        {
+            firstLassoThrown = true;
+            UIManager.ShowLassoAllModelsSubtitles();
+        }
+
         lassoReturned = false;
         Vector3 origin = Camera.main.transform.position + new Vector3(0, -0.5f, -0.5f); // near bottom of view
 
@@ -229,6 +236,10 @@ public class SwipeLasso : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
                 modelInfo.isCaptured = true;
                 modelObject.SetActive(false);
             }
+        }
+        if (!UIManager.Instance.lassoToggled)
+        {
+            UIManager.Instance.lasso.SetActive(false);
         }
     }
 
