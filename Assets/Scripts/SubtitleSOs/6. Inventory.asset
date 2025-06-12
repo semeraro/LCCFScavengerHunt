@@ -10,9 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 79e7ab7129b01c642a4cf793d280e6e6, type: 3}
-  m_Name: LassoGrab
+  m_Name: 6. Inventory
   m_EditorClassIdentifier: 
   subtitleText:
-  - Grab your lasso by clicking the button!
-  subtitlePacing: 100
-  audioClip: {fileID: 8300000, guid: 772a64454a48b00498dd849430627c3a, type: 3}
+  - That's it!
+  - Each data model that you capture will
+  - appear in your inventory, along with
+  - additional information about it.
+  subtitlePacing: 1.3
+  keepLastLineOnScreen: 1
+  audioClip: {fileID: 8300000, guid: 0cb0c90e3265386408d536638be999de, type: 3}

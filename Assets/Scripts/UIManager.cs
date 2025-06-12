@@ -9,73 +9,97 @@ using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
-    public static UIManager Instance { get; private set; }
+    // UI MANAGER INSTANCE
+    public static UIManager Instance { get; private set; } // creates instance for UIManager script
 
+    // INVENTORY VARIABLES
+    public GameObject inventoryButton; // button to toggle inventory
+    private Animator inventoryButtonAnimator;
+    private GameObject inventoryExclamation;
+    public GameObject inventoryModelArrow;
+    public GameObject modelInfoArrow;
+    public Boolean firstInventoryClose;
+    public GameObject inventoryUI; // inventory UI background
+    public GameObject inventoryGrid; // inventory UI grid
+    public GameObject inventoryItemPrefab; // inventory UI item prefab
+    public Image modelImage; // inventory UI image for individual model
+    public TextMeshProUGUI modelName; // inventory UI text containing model name
+    public TextMeshProUGUI modelOrigin; // inventory UI text containing model origin data (which exhibit it belongs to)
+    private Boolean inventoryToggled; // if inventory is being displayed
+    private int selectedInvIndex = -1; // use this to reference list of models in game manager when releasing models from inventory
 
+    // LASSO VARIABLES
+    public GameObject lassoButton; // button to toggle lasso
+    private Animator lassoButtonAnimator; // button animator
+    private GameObject lassoExclamation; // UI exclamation point for tutorial
+    public GameObject lasso; // lasso object with "swipe lasso" script attached
+    public GameObject lassoPanel; // panel from which player swipes to throw lasso
+    public Boolean lassoToggled; // if lasso is currently enabled
 
+    // SUBTITLE VARIABLES
+    public TextMeshProUGUI subtitleText; // subtitles
+    public TextMeshProUGUI timerText; // current time elapsed
 
-    public GameObject inventoryUI;
-    public GameObject inventoryGrid;
-    public GameObject inventoryItemPrefab;
-    public Image modelImage;
-    public TextMeshProUGUI modelName;
-    public TextMeshProUGUI modelOrigin;
+    // TIMER VARIABLES
+    public int startMinutes = 15; // game duration in minutes
+    public int startSeconds = 0; // game duration in seconds (added to minutes)
+    private float remainingTime; // time until game over
+    public Vector3 velocity = new Vector3(1, 1, 1); 
 
-    public GameObject inventoryButton;
-    public GameObject lassoButton;
-    private Boolean isInvDisplayed;
-    public TextMeshProUGUI subtitleText;
-    public TextMeshProUGUI timerText;
-    public int startMinutes = 15;
-    public int startSeconds = 0;
-    private float remainingTime;
-    public Vector3 velocity = new Vector3(1, 1, 1);
+    // IMAGE DETECTION / MODEL RELEASE VARIABLES
+    public GameObject FlashWarningImage; // warning displayed when image origin is detected
+    public Animator warningAnimator; // animator for flashing warning
+    public Button ReleaseModelButton; // button to release model from inventory
+    public int modelsReturned = 0; // number of models returned
 
+    // AUDIO SOURCE VARIABLES
+    public AudioSource dingSound; // ding sound effect
+    public AudioSource completionSound; // completion sound effect
+    public AudioSource whooshSound; // whoosh sound effect (plays when object is returning to image origin)
 
-    public Boolean lassoToggled;
-    public GameObject lasso;
-    public GameObject lassoPanel;
+    // GAME OVER VARIABLES
+    public GameObject successScreen; // success screen that shows when all images returned
+    public bool gameOver = false; // if game has ended
 
-    //Use this to reference list of models in Game Manager when Releasing Models
-    private int selectedInvIndex = -1;
-
-    public GameObject FlashWarningImage;
-    public Animator animator;
-    public Animator lassoIn;
-    public Animator lassoPulse;
-    public Button ReleaseModelButton;
-    public AudioSource dingSound;
-    public AudioSource completionSound;
-    public AudioSource whooshSound;
-    public GameObject successScreen;
-    public int modelsReturned = 0;
-    public bool gameOver = false;
-
-
+    // AWAKE
     void Awake()
     {
-        Debug.Log("UI Manager Awake");
-
+        // avoid duplicate singletons
         if (Instance != null && Instance != this)
         {
-            Destroy(gameObject); // Avoid duplicate singletons
+            Destroy(gameObject);
             return;
         }
 
+        // instantiates
         Instance = this;
-        DontDestroyOnLoad(gameObject); // Optional: persists across scenes
+        // optional: persists across scenes
+        DontDestroyOnLoad(gameObject);
 
-        isInvDisplayed = false;
+        // assigns lasso button UI variables
+        lassoExclamation = lassoButton.transform.GetChild(0).gameObject;
+        lassoButtonAnimator = lassoButton.GetComponent<Animator>();
+        inventoryExclamation = inventoryButton.transform.GetChild(0).gameObject;
+        inventoryButtonAnimator = inventoryButton.GetComponent<Animator>();
 
-
+        // default states for variables
+        inventoryToggled = false;
         StopFlashWarning();
+        lasso.SetActive(false);
+        lassoPanel.SetActive(false);
         lassoButton.SetActive(false);
-        lassoButton.GetComponent<Animator>().enabled = false;
+        lassoButtonAnimator.enabled = false;
+        inventoryButton.SetActive(false);
+        inventoryButtonAnimator.enabled = false;
+        inventoryUI.SetActive(false);
+        inventoryModelArrow.SetActive(false);
+        modelInfoArrow.SetActive(false);
+        firstInventoryClose = false;
         ToggleReleaseModelButton(false);
 
     }
 
-    //Set mode specific UI here!
+    // mode-specific UI variables
     public static void SetTourModeUI()
     {
         Debug.Log("PlayMode Tour"); // for some reason this doesnt work
@@ -90,82 +114,158 @@ public class UIManager : MonoBehaviour
         Instance.lassoToggled = false;
     }
 
+    // DISPLAY SUBTITLES AND PLAYS AUDIO CLIPS
+    public void ShowSubtitles(int subtitleIndex)
+    {
+        SubtitleSO subtitles = GameManager.Instance.subtitlesDictionary[subtitleIndex];
+        Instance.StartCoroutine(Instance.DisplaySubtitles(subtitles.subtitleText, subtitles.subtitlePacing, subtitles.keepLastLineOnScreen));
+        GameManager.Instance.audioSource.clip = subtitles.audioClip;
+        GameManager.Instance.audioSource.Play();
+    }
+
+    // INTRODUCTORY SUBTITLES
     public static void ShowIntroSubtitles()
     {
-        SubtitleSO introSubtitles = GameManager.Instance.subtitlesDictionary[0];
-        GameManager.Instance.audioSource.clip = introSubtitles.audioClip;
-        GameManager.Instance.audioSource.Play();
-        Instance.StartCoroutine(Instance.DisplaySubtitles(introSubtitles.subtitleText, introSubtitles.subtitlePacing));
+        Instance.ShowSubtitles(0); // "our data models have escape, please help us!"
+        Instance.Invoke("ShowLassoButton", 4.1f);
     }
+    // GRAB LASSO SUBTITLES
     public static void ShowLassoGrabSubtitles()
     {
-        SubtitleSO lassoGrabSubtitles = GameManager.Instance.subtitlesDictionary[1];
-        Instance.StartCoroutine(Instance.DisplaySubtitles(lassoGrabSubtitles.subtitleText, lassoGrabSubtitles.subtitlePacing));
-        GameManager.Instance.audioSource.clip = lassoGrabSubtitles.audioClip;
-        GameManager.Instance.audioSource.Play();
+        Instance.ShowSubtitles(1); // "grab your lasso by clicking the button!"
     }
-
+    // THROW LASSO SUBTITLES
     public static void ShowLassoTutorialSubtitles()
     {
-        SubtitleSO lassoTutorialSubtitles = GameManager.Instance.subtitlesDictionary[2];
-        Instance.StartCoroutine(Instance.DisplaySubtitles(lassoTutorialSubtitles.subtitleText, lassoTutorialSubtitles.subtitlePacing));
-        GameManager.Instance.audioSource.clip = lassoTutorialSubtitles.audioClip;
-        GameManager.Instance.audioSource.Play();
-    }
-
-    public static void ShowLassoAllModelsSubtitles()
-    {
-        SubtitleSO lassoAllModelsSubtitles = GameManager.Instance.subtitlesDictionary[3];
-        Instance.StartCoroutine(Instance.DisplaySubtitles(lassoAllModelsSubtitles.subtitleText, lassoAllModelsSubtitles.subtitlePacing));
-        GameManager.Instance.audioSource.clip = lassoAllModelsSubtitles.audioClip;
-        GameManager.Instance.audioSource.Play();
-    }
-
-    public static void ShowDataSubtitles(DataModelInfoSO modelInfo)
-    {
-        Instance.StartCoroutine(Instance.DisplaySubtitles(modelInfo.subtitleText, modelInfo.subtitlePacing));
+        Instance.ShowSubtitles(2);
 
     }
-
-    // Display subtitles in specified intervals
-    private IEnumerator DisplaySubtitles(string[] lines, float intervalSeconds)
+    // CATCH FIRST MODEL SUBTITLES 
+    public static void ShowLassoFirstModelSubtitles()
     {
-        subtitleText.transform.parent.gameObject.SetActive(true);
+        Instance.ShowSubtitles(3);
+        Instance.Invoke("ShowFirstModel", 3f);
+    }
+    public void ShowFirstModel()
+    {
+        foreach (var kvp in GameManager.modelDictionary)
+        {
+            GameObject modelObject = kvp.Key;
+            DataModelInfoSO modelInfo = kvp.Value;
+            if (modelInfo.name == "Red Blood Cell")
+            {
+                modelObject.SetActive(true);
+            }
+        }
+    }
+    // INVENTORY INTRO SUBTITLES
+    public static void ShowInventoryIntroSubtitles()
+    {
+        Instance.ShowSubtitles(4);
+        Instance.Invoke("ShowOpenInventorySubtitles", 4.9f);
+    }
+    // OPEN INVENTORY SUBTITLES
+    public void ShowOpenInventorySubtitles()
+    {
+        Instance.ShowInventoryButton();
+        Instance.ShowSubtitles(5);
+    }
+
+    public void ShowInventorySubtitles()
+    {
+        Instance.ShowSubtitles(6);
+        Instance.Invoke("ShowClickModelSubtitles", 6.2f);
+    }
+
+    public void ShowClickModelSubtitles()
+    {
+        Instance.ShowSubtitles(7);
+        inventoryModelArrow.SetActive(true);
+    }
+
+    public void ShowModelInformationSubtitles()
+    {
+        Instance.ShowSubtitles(8);
+        modelInfoArrow.SetActive(true);
+        Instance.Invoke("CloseInventorySubtitles", 5);
+    }
+
+    public void CloseInventorySubtitles()
+    {
+        Instance.ShowSubtitles(9);
+        modelInfoArrow.SetActive(false);
+    }
+
+    public void LassoRemainingModelsSubtitles()
+    {
+        Instance.ShowSubtitles(10);
+        Instance.Invoke("ShowRemainingModels", 3);
+    }
+    public void ShowRemainingModels()
+    {
+        foreach (var kvp in GameManager.modelDictionary)
+        {
+            GameObject modelObject = kvp.Key;
+            DataModelInfoSO modelInfo = kvp.Value;
+            if (modelInfo.name != "Red Blood Cell")
+            {
+                modelObject.SetActive(true);
+            }
+        }
+    }
+
+    // public static void ShowDataSubtitles(DataModelInfoSO modelInfo)
+    // {
+    //     Instance.StartCoroutine(Instance.DisplaySubtitles(modelInfo.subtitleText, modelInfo.subtitlePacing));
+
+    // }
+
+    // COROUTINE FOR DISPLAYING AND TIMING SUBTITLES
+    private IEnumerator DisplaySubtitles(string[] lines, float intervalSeconds, bool persistLastLine)
+    {
         foreach (string line in lines)
         {
             subtitleText.text = line;
             yield return new WaitForSeconds(intervalSeconds);
         }
-
-        // Optional: clear text after subtitles finish
-        subtitleText.text = " ";
-        subtitleText.transform.parent.gameObject.SetActive(false);
-        if (lassoButton.active == false)
-        {
-            ShowLassoButton();
-        }
     }
+
+    // 
     public void ShowLassoButton()
     {
         lassoButton.SetActive(true);
-        lassoButton.transform.GetChild(0).gameObject.SetActive(true);
-        lassoButton.GetComponent<Animator>().enabled = true;
+        lassoExclamation.SetActive(true);
+        lassoButtonAnimator.enabled = true;
         ShowLassoGrabSubtitles();
+
+    }
+
+    public void ShowInventoryButton()
+    {
+        inventoryButton.SetActive(true);
+        inventoryExclamation.SetActive(true);
+        inventoryButtonAnimator.enabled = true;
 
     }
 
     public void DisplayInventory() // True to set active 
     {
-        if (isInvDisplayed)
+        disableInventoryButtonAnimation();
+        if (inventoryToggled)
         {
             inventoryUI.SetActive(false);
-            isInvDisplayed = false;
+            inventoryToggled = false;
+            if (!firstInventoryClose)
+            {
+                firstInventoryClose = true;
+                Instance.LassoRemainingModelsSubtitles();
+            }
         }
         else
         {
             UpdateInventory(); // For now, update inventory everytime you open it.
             inventoryUI.SetActive(true);
-            isInvDisplayed = true;
+            inventoryToggled = true;
         }
     }
 
@@ -229,6 +329,14 @@ public class UIManager : MonoBehaviour
     }
     public void SetModelStats(int index)
     {
+        if (GameManager.capturedModels[index].name == "Red Blood Cell")
+        {
+            if (inventoryModelArrow.activeInHierarchy)
+            {
+                inventoryModelArrow.SetActive(false);
+                Instance.ShowModelInformationSubtitles();
+            }
+        }
         selectedInvIndex = index;
         Debug.Log(selectedInvIndex); // Why is this always 1?
         modelImage.sprite = GameManager.capturedModels[index].image;
@@ -283,19 +391,30 @@ public class UIManager : MonoBehaviour
 
     public void lassoAnimationSmall()
     {
-        if (!lassoButton.GetComponent<Animator>().GetBool("button_small"))
+        if (!lassoButtonAnimator.GetBool("button_small"))
         {
-            lassoButton.GetComponent<Animator>().SetBool("button_small", true);
-            lassoButton.transform.GetChild(0).gameObject.SetActive(false);
+            lassoButtonAnimator.SetBool("button_small", true);
+            lassoExclamation.SetActive(false);
 
             ShowLassoTutorialSubtitles();
+        }
+    }
+
+    public void disableInventoryButtonAnimation()
+    {
+        if (inventoryButtonAnimator.GetBool("pulsing"))
+        {
+            inventoryButtonAnimator.SetBool("pulsing", false);
+            inventoryExclamation.SetActive(false);
+
+            ShowInventorySubtitles();
         }
     }
 
     public static void FlashWarning()
     {
         Instance.FlashWarningImage.SetActive(true);
-        Instance.animator.Play("FlashWarning_Anim");
+        Instance.warningAnimator.Play("FlashWarning_Anim");
     }
     public static void StopFlashWarning()
     {
@@ -323,7 +442,7 @@ public class UIManager : MonoBehaviour
                 {
                     modelObject.SetActive(true);
                     inventoryUI.SetActive(false);
-                    isInvDisplayed = false;
+                    inventoryToggled = false;
                 }
             }
             UpdateInventory();
@@ -336,6 +455,7 @@ public class UIManager : MonoBehaviour
         {
             GameObject modelObject = kvp.Key;
             DataModelInfoSO modelInfo = kvp.Value;
+
 
             if (modelInfo.isReturning)
             {

@@ -6,26 +6,29 @@ using System.Collections.Generic;
 
 public class SwipeLasso : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDragHandler
 {
-    public RectTransform swipeArea;
-    public Material ropeMaterial;
-    public Material torusMaterial;
-    public float maxSwipeDistance = 8000f;
-    public float maxLassoDistance = 6f;
-    public float lassoSpeed = 10f;
-    public float lassoArcHeight = 1.5f;
-    public static bool lassoReturned = true;
+    // UI VARIABLES
+    public RectTransform swipeArea; // rectangular area in which player can swipe
+
+    // LASSO 3D MODEL VARIABLES
+    public Material ropeMaterial; // material for lasso 3D rope
+    public Material torusMaterial; // material for lasso 3D torus
+    public Transform emptyParent; // empty object that models will be parented to after capturing
+    public RuntimeAnimatorController anim1; // animator controller for models
+    public AudioSource lassoWhoosh; // lasso whoosh sound effect
+
+    // LASSO CALCULATION VARIABLES
+    public float maxSwipeDistance = 8000f; // max swipe distance
+    public float maxLassoDistance = 6f; // max lasso distance
+    public float lassoSpeed = 10f; // lasso speed
+    public float lassoArcHeight = 1.5f; // lasso arc height
+    public Vector3 torusPos; // vector storing current position of torus
+    private Vector2 swipeStart; // position where swipe begins
+    private Vector2 swipeEnd; // position where swipe ends
+
+    // LASSO BOOLEANS
+    public static bool lassoReturned = true; // if lasso has 
     public bool firstLassoThrown = false;
-    
-
-    public Transform emptyParent;
-    public RuntimeAnimatorController anim1;
-    public Vector3 torusPos;
-
-    private Vector2 swipeStart;
-    private Vector2 swipeEnd;
     private bool swiping = false;
-
-
 
 
     public void OnPointerDown(PointerEventData eventData)
@@ -94,8 +97,9 @@ public class SwipeLasso : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
         if (firstLassoThrown == false)
         {
             firstLassoThrown = true;
-            UIManager.ShowLassoAllModelsSubtitles();
+            UIManager.ShowLassoFirstModelSubtitles();
         }
+        lassoWhoosh.Play();
 
         lassoReturned = false;
         Vector3 origin = Camera.main.transform.position + new Vector3(0, -0.5f, -0.5f); // near bottom of view
@@ -235,6 +239,11 @@ public class SwipeLasso : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
                 modelInfo.isBeingLassoed = false;
                 modelInfo.isCaptured = true;
                 modelObject.SetActive(false);
+                GameManager.Instance.dingSound.Play();
+                if (modelInfo.name == "Red Blood Cell")
+                {
+                    UIManager.ShowInventoryIntroSubtitles();
+                }
             }
         }
         if (!UIManager.Instance.lassoToggled)

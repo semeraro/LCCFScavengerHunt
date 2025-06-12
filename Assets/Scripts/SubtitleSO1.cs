@@ -15,7 +15,8 @@ public class SubtitleSO : ScriptableObject
     public String[] subtitleText; 
     
     [Tooltip("Pauses between switching between subtitle text.")]
-    public float subtitlePacing; 
+    public float subtitlePacing;
+    public bool keepLastLineOnScreen;
     public AudioClip audioClip; 
 
 

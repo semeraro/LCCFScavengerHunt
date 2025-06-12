@@ -10,14 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 79e7ab7129b01c642a4cf793d280e6e6, type: 3}
-  m_Name: LassoTheModels
+  m_Name: 3. LassoFirstModel
   m_EditorClassIdentifier: 
   subtitleText:
   - You got it!
-  - Now, try to lasso all of the models
-  - that got loose!
-  - We have to return them to their
-  - exhibits, or else
-  - the supercomputer will break!
+  - Now, try to catch this model with your lasso!
   subtitlePacing: 1.45
-  audioClip: {fileID: 8300000, guid: df3bb1f8bdbbd0844b9a7e0b1feed291, type: 3}
+  keepLastLineOnScreen: 1
+  audioClip: {fileID: 8300000, guid: 116b86b83e7af0f4abeb75e23d6a804c, type: 3}
