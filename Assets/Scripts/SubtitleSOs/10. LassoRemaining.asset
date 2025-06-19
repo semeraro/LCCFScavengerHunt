@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: 10. LassoRemaining
   m_EditorClassIdentifier: 
   subtitleText:
+  - Awesome!
   - Now, try to lasso the remaining models
   - so that you can return them to their exhibits.
-  subtitlePacing: 1.4
+  subtitlePacing: 1.8
   keepLastLineOnScreen: 1
-  audioClip: {fileID: 0}
+  audioClip: {fileID: 8300000, guid: ad5e7fcc3b95b1c47b2ed37237af12f0, type: 3}

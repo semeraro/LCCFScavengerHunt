@@ -35,6 +35,7 @@ public class UIManager : MonoBehaviour
     public GameObject lasso; // lasso object with "swipe lasso" script attached
     public GameObject lassoPanel; // panel from which player swipes to throw lasso
     public Boolean lassoToggled; // if lasso is currently enabled
+    public bool allModelsCaptured;
 
     // SUBTITLE VARIABLES
     public TextMeshProUGUI subtitleText; // subtitles
@@ -51,6 +52,8 @@ public class UIManager : MonoBehaviour
     public Animator warningAnimator; // animator for flashing warning
     public Button ReleaseModelButton; // button to release model from inventory
     public int modelsReturned = 0; // number of models returned
+    public bool firstPosterScanned;
+    public bool firstModelReturned;
 
     // AUDIO SOURCE VARIABLES
     public AudioSource dingSound; // ding sound effect
@@ -84,6 +87,7 @@ public class UIManager : MonoBehaviour
 
         // default states for variables
         inventoryToggled = false;
+        allModelsCaptured = false;
         StopFlashWarning();
         lasso.SetActive(false);
         lassoPanel.SetActive(false);
@@ -95,6 +99,8 @@ public class UIManager : MonoBehaviour
         inventoryModelArrow.SetActive(false);
         modelInfoArrow.SetActive(false);
         firstInventoryClose = false;
+        firstPosterScanned = false;
+        firstModelReturned = false;
         ToggleReleaseModelButton(false);
 
     }
@@ -212,6 +218,28 @@ public class UIManager : MonoBehaviour
                 modelObject.SetActive(true);
             }
         }
+    }
+
+    public void AllModelsCapturedSubtitles()
+    {
+        Instance.ShowSubtitles(11);
+        Instance.Invoke("FindPostersSubtitles", 3.4f);
+        Instance.disableLassoUI();
+    }
+
+    public void FindPostersSubtitles()
+    {
+        Instance.ShowSubtitles(12);
+    }
+
+    public void FirstPosterSubtitles()
+    {
+        Instance.ShowSubtitles(13);
+    }
+
+    public void FirstModelReturnedSubtitles()
+    {
+        Instance.ShowSubtitles(14);
     }
 
     // public static void ShowDataSubtitles(DataModelInfoSO modelInfo)
@@ -413,6 +441,11 @@ public class UIManager : MonoBehaviour
 
     public static void FlashWarning()
     {
+        if (Instance.firstPosterScanned == false)
+        {
+            Instance.firstPosterScanned = true;
+            Instance.FirstPosterSubtitles();
+        }
         Instance.FlashWarningImage.SetActive(true);
         Instance.warningAnimator.Play("FlashWarning_Anim");
     }
@@ -475,15 +508,21 @@ public class UIManager : MonoBehaviour
                 }
             }
         }
+        if (modelsReturned == 1 && firstModelReturned == false)
+        {
+            firstModelReturned = true;
+            Instance.FirstModelReturnedSubtitles();
+        }
 
         if (modelsReturned == 3 && !gameOver)
-        {
-            completionSound.Play();
-            successScreen.SetActive(true);
-            inventoryButton.SetActive(false);
-            inventoryUI.SetActive(false);
-            gameOver = true;
-        }
+            {
+                completionSound.Play();
+                successScreen.SetActive(true);
+                subtitleText.enabled = false;
+                inventoryButton.SetActive(false);
+                inventoryUI.SetActive(false);
+                gameOver = true;
+            }
     }
     
 

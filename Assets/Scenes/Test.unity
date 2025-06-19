@@ -277,6 +277,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: db648f6bc135eaa488f5c8194d1b9501, type: 2}
   - {fileID: 11400000, guid: 18b088a903b99ba4cb41cd6e646879ee, type: 2}
   - {fileID: 11400000, guid: 8b7c80621e08b884497c79e04975df79, type: 2}
+  - {fileID: 11400000, guid: 0900ca114d083e04698a22e923b0bd5e, type: 2}
+  - {fileID: 11400000, guid: abdcbf7b64cd539459d51e60b175ea73, type: 2}
+  - {fileID: 11400000, guid: 3b746b6cf798b5a4a8529653264ea739, type: 2}
+  - {fileID: 11400000, guid: 48a62931323757a458684a5471cc0f79, type: 2}
 --- !u!4 &226348585
 Transform:
   m_ObjectHideFlags: 0
@@ -2059,6 +2063,11 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!95 &1616815346 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 7689529835840696872, guid: 83935cb4410887049a50f5d9eed0d382, type: 3}
+  m_PrefabInstance: {fileID: 7470825046439379920}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1737598325 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4026113448771009982, guid: 83935cb4410887049a50f5d9eed0d382, type: 3}
@@ -3206,6 +3215,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 672451314}
     - target: {fileID: 1035284981827153201, guid: 83935cb4410887049a50f5d9eed0d382, type: 3}
+      propertyPath: warningAnimator
+      value: 
+      objectReference: {fileID: 1616815346}
+    - target: {fileID: 1035284981827153201, guid: 83935cb4410887049a50f5d9eed0d382, type: 3}
       propertyPath: ReleaseModelButton
       value: 
       objectReference: {fileID: 762485091}
@@ -3687,11 +3700,19 @@ PrefabInstance:
       objectReference: {fileID: 1899645480}
     - target: {fileID: 8703670055132553681, guid: 83935cb4410887049a50f5d9eed0d382, type: 3}
       propertyPath: m_LocalScale.x
-      value: 1.1451502
+      value: 0.866329
+      objectReference: {fileID: 0}
+    - target: {fileID: 8703670055132553681, guid: 83935cb4410887049a50f5d9eed0d382, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.002162
+      objectReference: {fileID: 0}
+    - target: {fileID: 8703670055132553681, guid: 83935cb4410887049a50f5d9eed0d382, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1.002162
       objectReference: {fileID: 0}
     - target: {fileID: 8703670055132553681, guid: 83935cb4410887049a50f5d9eed0d382, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -524
+      value: -405
       objectReference: {fileID: 0}
     - target: {fileID: 8703670055132553681, guid: 83935cb4410887049a50f5d9eed0d382, type: 3}
       propertyPath: m_AnchoredPosition.y

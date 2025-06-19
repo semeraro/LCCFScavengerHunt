@@ -29,6 +29,7 @@ public class SwipeLasso : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
     public static bool lassoReturned = true; // if lasso has 
     public bool firstLassoThrown = false;
     private bool swiping = false;
+    public int modelsCaptured = 0;
 
 
     public void OnPointerDown(PointerEventData eventData)
@@ -238,6 +239,7 @@ public class SwipeLasso : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
             {
                 modelInfo.isBeingLassoed = false;
                 modelInfo.isCaptured = true;
+                modelsCaptured += 1;
                 modelObject.SetActive(false);
                 GameManager.Instance.dingSound.Play();
                 if (modelInfo.name == "Red Blood Cell")
@@ -246,10 +248,15 @@ public class SwipeLasso : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
                 }
             }
         }
-        if (!UIManager.Instance.lassoToggled)
+        if (modelsCaptured == 3)
         {
-            UIManager.Instance.lasso.SetActive(false);
+            UIManager.Instance.allModelsCaptured = true;
+            UIManager.Instance.Invoke("AllModelsCapturedSubtitles", 1);
         }
+        if (!UIManager.Instance.lassoToggled)
+            {
+                UIManager.Instance.lasso.SetActive(false);
+            }
     }
 
 

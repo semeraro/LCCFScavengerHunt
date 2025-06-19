@@ -145,14 +145,6 @@ public class GameManager : MonoBehaviour
 
                 }
             }
-
-        }
-        if (capturedModels.Count == 3 && !allModelsCaptured)
-        {
-            allModelsCaptured = true;
-            capturedAudio.Play();
-            uiManager.disableLassoUI();
-                
         }
     }
     void TourModeUpdate()
